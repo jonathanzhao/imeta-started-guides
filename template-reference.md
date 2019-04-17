@@ -349,7 +349,6 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 ```
 - 生成文档示例
 ```html
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -364,11 +363,11 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 <h1 class="center">类型属性</h1>
 <div class="layer1">
 <div class="layer2 hence">
-<h2 class="center">商品(aa.product.Product)</h2>
+<h2 class="center">商品(cbo.product.Product)</h2>
 <div class="description">
-继承&nbsp;<a href="aa_base_Archive.html">Archive</a>&nbsp;<br/>
+继承&nbsp;<a href="cbo_base_Archive.html">Archive</a>&nbsp;<br/>
 <br/>
-<!--<span class="title w100">JSON示例：</span><a href="../../json/aa_product_Product.json">Product</a>-->
+<!--<span class="title w100">JSON示例：</span><a href="../../json/cbo_product_Product.json">Product</a>-->
 <span class="title">表名</span>product
 </div>
 <table class="table-5">
@@ -376,7 +375,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 <tr><th>序号</th><th>名称</th><th>类型</th><th>标题</th><th>列名</th><th>特性</th><th>关系</th></tr>
 </thead>
 <tbody>
-	 <tr><td>1</td><td>cate</td><td><a href="aa_product_ProductCate.html">ProductCate</a></td><td>商品分类</td><td>cate_id</td><td> <strong>必输</strong></td><td></td></tr>
+	 <tr><td>1</td><td>cate</td><td><a href="cbo_product_ProductCate.html">ProductCate</a></td><td>商品分类</td><td>cate_id</td><td> <strong>必输</strong></td><td></td></tr>
 	 <tr><td>2</td><td>markPrice</td><td>java.math.BigDecimal</td><td>标价</td><td>mark_price</td><td></td><td></td></tr>
 	 <tr><td>3</td><td>salePrice</td><td>java.math.BigDecimal</td><td>售价</td><td>sale_price</td><td></td><td></td></tr>
 	 <tr><td>4</td><td>brand</td><td>String</td><td>品牌</td><td>brand</td><td></td><td></td></tr>
@@ -385,7 +384,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 	 <tr><td>7</td><td>imgUrl</td><td>String</td><td>图片地址</td><td>img_url</td><td></td><td></td></tr>
 	 <tr><td>8</td><td>code</td><td>String</td><td>编码</td><td>code</td><td> <strong>唯一</strong></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>9</td><td>name</td><td>String</td><td>名称</td><td>name</td><td></td><td> <strong>继承</strong></td></tr>
-	 <tr><td>10</td><td>id</td><td>Long</td><td>ID</td><td>id <strong>主键</strong></td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>10</td><td>id</td><td>Long</td><td>ID</td><td>id</td><td><strong>主键</strong></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>11</td><td>pubts</td><td>java.util.Date</td><td>时间戳</td><td>pubts <strong>同步</strong></td><td></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>12</td><td>tenant</td><td>Long</td><td>租户</td><td>tenant_id</td><td> <strong>必输</strong> <strong>隔离</strong></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>13</td><td>createTime</td><td>java.util.Date</td><td>创建时间</td><td>create_time</td><td></td><td> <strong>继承</strong></td></tr>
@@ -395,8 +394,8 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 	 <tr><td>17</td><td>creator</td><td>String</td><td>创建人</td><td>creator</td><td></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>18</td><td>modifier</td><td>String</td><td>修改人</td><td>modifier</td><td></td><td> <strong>继承</strong></td></tr>
 	 <tr><td>19</td><td>isAvailable</td><td>Boolean</td><td>是否可用</td><td>is_available</td><td></td><td> <strong>继承</strong></td></tr>
-	 <tr><td>1</td><td>skues</td><td>List&lt;<a href="aa_product_ProductSKU.html">ProductSKU</a>&gt;</td><td>SKU</td><td></td><td></td><td> <strong>组合</strong></td></tr>
-	 <tr><td>2</td><td>tags</td><td>List&lt;<a href="aa_product_ProductTag.html">ProductTag</a>&gt;</td><td>商品标签</td><td></td><td></td><td> <strong>组合</strong></td></tr>
+	 <tr><td>1</td><td>skues</td><td>List&lt;<a href="cbo_product_ProductSKU.html">ProductSKU</a>&gt;</td><td>SKU</td><td></td><td></td><td> <strong>组合</strong></td></tr>
+	 <tr><td>2</td><td>tags</td><td>List&lt;<a href="cbo_product_ProductTag.html">ProductTag</a>&gt;</td><td>商品标签</td><td></td><td></td><td> <strong>组合</strong></td></tr>
 </tbody>
 </table>
 <p class="referenced">被引用（被其他实体关联）</p>
@@ -414,8 +413,41 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 </body>
 </html>
 ```
-- 预览效果
+- 预览效果<br/>
+**商品(cbo.product.Product)**<br/>
+继承 [Archive]()<br/>
+表名 product
 
+|序号|名称|类型|标题|列名|特性|关系|
+|---|---|---|---|---|---|---|
+|1|cate|[ProductCate]('#')|商品分类|cate_id|必输||
+|2|markPrice|java.math.BigDecimal|标价|mark_price|||
+|3|salePrice|java.math.BigDecimal|售价|sale_price|||
+|4|brand|String|品牌|brand|||
+|5|unit|String|单位|unit|||
+|6|barcode|String|条形码|barcode|||
+|7|imgUrl|String|图片地址|img_url|||
+|8|code|String|编码|code|唯一|继承|
+|9|name|String|名称|name||继承|
+|10|id|Long|ID|id|**主键**|继承|
+|11|pubts|java.util.Date|时间戳|pubts 同步||继承|
+|12|tenant|Long|租户|tenant_id|必输 隔离|继承|
+|13|createTime|java.util.Date|创建时间|create_time||继承|
+|14|createDate|java.util.Date|创建日期|create_date||继承|
+|15|modifyTime|java.util.Date|修改时间|modify_time||继承|
+|16|modifyDate|java.util.Date|修改日期|modify_date||继承|
+|17|creator|String|创建人|creator||继承|
+|18|modifier|String|修改人|modifier||继承|
+|19|isAvailable|Boolean|是否可用|is_available||继承|
+|1|skues|List<[ProductSKU]('#')>|SKU|||组合|
+|2|tags|List<[ProductTag]('#')>|商品标签|||组合|
+---
+被引用（被其他实体关联）
+
+|序号|名称|类型|标题|列名|特性|关系|
+|---|---|---|---|---|---|---|
+|1|stock_product_CurrentStock|[CurrentStock]('#')|现存量|||虚拟|
+|2|sm_product_SaleOrderDetail|[SaleOrderDetail]('#')|销售订单明细|||虚拟|
 
 ### 数据渲染
 - 模版内容
