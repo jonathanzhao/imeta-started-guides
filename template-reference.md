@@ -441,7 +441,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 |19|isAvailable|Boolean|是否可用|is_available||继承|
 |1|skues|List<[ProductSKU]('#')>|SKU|||组合|
 |2|tags|List<[ProductTag]('#')>|商品标签|||组合|
----
+
 被引用（被其他实体关联）
 
 |序号|名称|类型|标题|列名|特性|关系|
