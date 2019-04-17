@@ -1,6 +1,8 @@
 # imeta 模版参考手册
 ## 简介
-imeta 模版支持设计态根据元数据生成代码、Sql脚本、单元测试代码、帮助文档等；还支持运行时格式化数据，类似themeleaf等模版引擎的功能。
+imeta 模版主要有两个功能：
+1. 支持设计态根据元数据生成代码、Sql脚本、单元测试代码、帮助文档等。
+2. 支持运行时渲染数据，类似themeleaf等模版引擎，将数据按照模版格式输出。
 ## 模版解析语法
 - 名称(name)<br/>
 ![name](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/tpl/e/name.png "name")
@@ -274,7 +276,148 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 
 }
 ```
-### 数据格式化
+### 文档生成
+- 模版内容
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<title>类型属性文档</title>
+<link href="../css/main.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<div class="menu">
+[<a href="../index.html">HOME</a>]
+</div>
+<h1 class="center">类型属性</h1>
+<div class="layer1">
+<div class="layer2 hence">
+<h2 class="center"><#=title#>(<#=owner.moduleName#>.<#=owner.name#>.<#=name#>)</h2>
+<#?(m1Type!="Enum"){#>
+<div class="description">
+<#?(parent!=null)#>继承&nbsp;<#@JavaTypeBuilder,parent#>&nbsp;<#}#><#?(suppliers._size>0)#>实现接口&nbsp;<#*(supplier:suppliers){#><#@JavaTypeBuilder#>&nbsp;<#}#><#}#><br/>
+<#?(children._size>0)#>子类&nbsp;<#*(child:children){#><#@JavaTypeBuilder#>&nbsp;<#}#><#}#><#?(clients._size>0)#>实现子类&nbsp;<#*(client:clients){#><#@JavaTypeBuilder#>&nbsp;<#}#><#}#><br/>
+<#?(tableName!=null){#>
+<!--<span class="title w100">JSON示例：</span><a href="../../json/<#=owner.moduleName#>_<#=owner.name#>_<#=name#>.json"><#=name#></a>-->
+<span class="title"><#?(isView==true){#>视图<#}#><#?(isView!=true){#>表名<#}#></span><#=tableName#>
+<#}#>
+</div>
+<table class="table-5">
+<thead>
+<tr><th>序号</th><th>名称</th><th>类型</th><th>标题</th><th>列名</th><th>特性</th><th>关系</th></tr>
+</thead>
+<tbody>
+	 <#*(property:properties)?((isAggregationProperty!=true || isAggrChildRole!=true) && isDependencyProperty!=true) {#>
+	 <tr><td><#=INDEX#></td><td><#=name#></td><td><#@JavaTypeBuilder#></td><td><#=title#></td><td><#?(modeType!="None")#><#=columnName#><#}#><#?(isKey==true){#> <strong>主键</strong><#}#><#?(isSyncKey==true){#> <strong>同步</strong><#}#></td><td><#?(isRequired==true){#> <strong>必输</strong><#}#><#?(isUnique==true){#> <strong>唯一</strong><#}#><#?(isPartition==true){#> <strong>隔离</strong><#}#></td><td><#?(isDependencyProperty==true){#> <strong class="hence2">虚拟</strong><#}#><#?(isDerived==true){#> <strong>继承</strong><#}#><#?(isImplemented==true){#> <strong>实现</strong><#}#><#?(isOverride==true){#> <strong>重写</strong><#}#><#?(isRedundant==true){#> <strong>冗余</strong><#}#></td></tr>
+	 <#}#>
+	 <#*(property:properties)?(isAggregationProperty==true && isAggrChildRole==true){#>
+	 <tr><td><#=INDEX#></td><td><#=name#></td><td><#@JavaTypeBuilder#></td><td><#=type.title#></td><td><#?(modeType!="None")#><#=columnName#><#}#><#?(isKey==true){#> <strong>主键</strong><#}#><#?(isSyncKey==true){#> <strong>同步</strong><#}#></td><td><#?(isRequired==true){#> <strong>必输</strong><#}#><#?(isUnique==true){#> <strong>唯一</strong><#}#><#?(isPartition==true){#> <strong>隔离</strong><#}#></td><td><#?(isDependencyProperty==true){#> <strong class="hence2">虚拟</strong><#}#><#?(isDerived==true){#> <strong>继承</strong><#}#><#?(isImplemented==true){#> <strong>实现</strong><#}#><#?(isOverride==true){#> <strong>重写</strong><#}#><#?(isRedundant==true){#> <strong>冗余</strong><#}#> <strong>组合</strong></td></tr>
+	 <#}#>
+</tbody>
+</table>
+<#?(properties._eq(isDependencyProperty==true)._size>0){#>
+<p class="referenced">被引用（被其他实体关联）</p>
+<table class="table-5">
+<thead>
+<tr><th>序号</th><th>名称</th><th>类型</th><th>标题</th><th>列名</th><th>特性</th><th>关系</th></tr>
+</thead>
+<tbody>
+	 <#*(property:properties)?(isDependencyProperty==true){#>
+	 <tr><td><#=INDEX#></td><td><#=name#></td><td><#@JavaTypeBuilder#></td><td><#=title#></td><td></td><td></td><td><#?(isDependencyProperty==true){#> <strong class="hence2">虚拟</strong><#}#><#?(isDerived==true){#> <strong>继承</strong><#}#><#?(isImplemented==true){#> <strong>实现</strong><#}#><#?(isOverride==true){#> <strong>重写</strong><#}#></td></tr>
+	 <#}#>
+</tbody>
+</table>
+<#}#>
+<#}#>
+<#?(m1Type=="Enum"){#>
+<table class="table-5">
+<thead>
+<tr><th>名称</th><th>枚举项</th><th>枚举值</th></tr>
+</thead>
+<tbody>
+	 <#*(literal:literals){#>
+	 <tr><td><#=name#></td><td><#=title#></td><td><#=value#></td></tr>
+	 <#}#>
+</tbody>
+</table>
+<#}#>
+</div>
+</div>
+</body>
+</html>
+```
+- 生成文档示例
+```html
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<title>类型属性文档</title>
+<link href="../css/main.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<div class="menu">
+[<a href="../index.html">HOME</a>]
+</div>
+<h1 class="center">类型属性</h1>
+<div class="layer1">
+<div class="layer2 hence">
+<h2 class="center">商品(aa.product.Product)</h2>
+<div class="description">
+继承&nbsp;<a href="aa_base_Archive.html">Archive</a>&nbsp;<br/>
+<br/>
+<!--<span class="title w100">JSON示例：</span><a href="../../json/aa_product_Product.json">Product</a>-->
+<span class="title">表名</span>product
+</div>
+<table class="table-5">
+<thead>
+<tr><th>序号</th><th>名称</th><th>类型</th><th>标题</th><th>列名</th><th>特性</th><th>关系</th></tr>
+</thead>
+<tbody>
+	 <tr><td>1</td><td>cate</td><td><a href="aa_product_ProductCate.html">ProductCate</a></td><td>商品分类</td><td>cate_id</td><td> <strong>必输</strong></td><td></td></tr>
+	 <tr><td>2</td><td>markPrice</td><td>java.math.BigDecimal</td><td>标价</td><td>mark_price</td><td></td><td></td></tr>
+	 <tr><td>3</td><td>salePrice</td><td>java.math.BigDecimal</td><td>售价</td><td>sale_price</td><td></td><td></td></tr>
+	 <tr><td>4</td><td>brand</td><td>String</td><td>品牌</td><td>brand</td><td></td><td></td></tr>
+	 <tr><td>5</td><td>unit</td><td>String</td><td>单位</td><td>unit</td><td></td><td></td></tr>
+	 <tr><td>6</td><td>barcode</td><td>String</td><td>条形码</td><td>barcode</td><td></td><td></td></tr>
+	 <tr><td>7</td><td>imgUrl</td><td>String</td><td>图片地址</td><td>img_url</td><td></td><td></td></tr>
+	 <tr><td>8</td><td>code</td><td>String</td><td>编码</td><td>code</td><td> <strong>唯一</strong></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>9</td><td>name</td><td>String</td><td>名称</td><td>name</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>10</td><td>id</td><td>Long</td><td>ID</td><td>id <strong>主键</strong></td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>11</td><td>pubts</td><td>java.util.Date</td><td>时间戳</td><td>pubts <strong>同步</strong></td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>12</td><td>tenant</td><td>Long</td><td>租户</td><td>tenant_id</td><td> <strong>必输</strong> <strong>隔离</strong></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>13</td><td>createTime</td><td>java.util.Date</td><td>创建时间</td><td>create_time</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>14</td><td>createDate</td><td>java.util.Date</td><td>创建日期</td><td>create_date</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>15</td><td>modifyTime</td><td>java.util.Date</td><td>修改时间</td><td>modify_time</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>16</td><td>modifyDate</td><td>java.util.Date</td><td>修改日期</td><td>modify_date</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>17</td><td>creator</td><td>String</td><td>创建人</td><td>creator</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>18</td><td>modifier</td><td>String</td><td>修改人</td><td>modifier</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>19</td><td>isAvailable</td><td>Boolean</td><td>是否可用</td><td>is_available</td><td></td><td> <strong>继承</strong></td></tr>
+	 <tr><td>1</td><td>skues</td><td>List&lt;<a href="aa_product_ProductSKU.html">ProductSKU</a>&gt;</td><td>SKU</td><td></td><td></td><td> <strong>组合</strong></td></tr>
+	 <tr><td>2</td><td>tags</td><td>List&lt;<a href="aa_product_ProductTag.html">ProductTag</a>&gt;</td><td>商品标签</td><td></td><td></td><td> <strong>组合</strong></td></tr>
+</tbody>
+</table>
+<p class="referenced">被引用（被其他实体关联）</p>
+<table class="table-5">
+<thead>
+<tr><th>序号</th><th>名称</th><th>类型</th><th>标题</th><th>列名</th><th>特性</th><th>关系</th></tr>
+</thead>
+<tbody>
+	 <tr><td>1</td><td>stock_product_CurrentStock</td><td><a href="stock_currentstock_CurrentStock.html">CurrentStock</a></td><td>现存量</td><td></td><td></td><td> <strong class="hence2">虚拟</strong></td></tr>
+	 <tr><td>2</td><td>sm_product_SaleOrderDetail</td><td><a href="sm_so_SaleOrderDetail.html">SaleOrderDetail</a></td><td>销售订单明细</td><td></td><td></td><td> <strong class="hence2">虚拟</strong></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</body>
+</html>
+```
+- 预览效果
+
+
+### 数据渲染
 - 模版内容
 ```java
 {
@@ -508,7 +651,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 }
 ```
 
-- 查询结果模版格式化
+- 查询数据渲染结果
 ```json
 {
     "success": true,
