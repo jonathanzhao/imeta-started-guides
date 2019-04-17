@@ -368,7 +368,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 继承&nbsp;<a href="cbo_base_Archive.html">Archive</a>&nbsp;<br/>
 <br/>
 <!--<span class="title w100">JSON示例：</span><a href="../../json/cbo_product_Product.json">Product</a>-->
-<span class="title">表名</span>product
+<span class="title">表名</span>cbo_product
 </div>
 <table class="table-5">
 <thead>
@@ -416,7 +416,7 @@ public class TreeArchive extends Archive implements Tree<Long, String> {
 - 预览效果<br/>
 **商品(cbo.product.Product)**<br/>
 继承 [Archive]()<br/>
-表名 product
+表名 cbo_product
 
 |序号|名称|类型|标题|列名|特性|关系|
 |---|---|---|---|---|---|---|
