@@ -8,6 +8,23 @@
 - 统计分析
 ![电子商城统计分析类图](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/mall-stat.png "Mall Statistic Model")
 
+## 用户模型与元数据的映射
+|用户模型|元数据模型|示例|
+|---|---|---|
+| 包 | Component | order,goods |
+| 包间依赖 | Component.dependencies | |
+| 基本类型 | DataType | Integer,DateTime,String |
+| 枚举类型 | Enumeration | OrderStatus |
+| 实体 | Entity | Order,OderDetail,Goods |
+| 接口 | Interface | Code,Autditable |
+| 组合关系 | Association | Order -> OrderDetail |
+| 关联关系 | Association | OrderDetail -> Goods |
+| 继承关系 | Generalization| Goods -> Archive |
+|实现关系|Realization| OrderBase -> Auditable |
+|属性|Property|code,details,createTime|
+|方法|Operation||
+|方法参数|Parameter||
+
 ## 配置模型数据（元数据）
 
 ## 配置查询方案
