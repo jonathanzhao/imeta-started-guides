@@ -119,3 +119,7 @@ iMeta提供了一套模版解析引擎，提供支持设计态根据元数据生
 ### 零JAVA代码
 iMeta提供了一个简洁快速的imeta-boot-starter-service模块，仅仅通过配置文件，即可完成应用程序开发，一般情况下，无需一行JAVA代码。
 > 详细内容 [零JAVA代码参考手册](zero-starter-reference.md)
+
+### 集成WebFlux
+iMeta可以快速集成Spring WebFlux反应式编程框架，一般用于任务调度、路由分发、No-Sql数据库数据存储。
+> 详细内容 [WebFlux参考手册](starter-webflux-reference.md)
