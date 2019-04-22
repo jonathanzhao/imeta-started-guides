@@ -43,6 +43,10 @@ iMeta提供了集成WebFlux的能力，可以方便的开发涉及任务调度�
 
 ## 核心概念
 ### 用户模型 UserModel
+![商城用户模型](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/mall.png "Mall Model")
+
+上图给出了电子商城的用户模型，经过需求分析设计，最终的静态类图可以认为是iMeta所需的用户模型（目前iMeta暂不考虑流程图、状态机等动态模型）。
+用户模型通常包含以下几个UML元素：包、类、属性、关系。关系主要描述类间关系，有继承、实现、关联、组合。
 
 ### 元数据定义 MetadataDefinition
 ![元数据定义](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/md-definition.png "MetadataDefinition")
