@@ -11,48 +11,677 @@
 
 ![查询条件](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-condition.png "QueryCondition")
 
-查询方案为统一查询引擎对外开发的唯一数据结构，所有的查询配置都要遵守查询方案的定义。
+查询方案为统一查询引擎对外开发的核心数据结构，所有的查询配置都要遵守查询方案的定义。
+
+> 查询方案示例<br/>
+```json
+{
+  "fullname":"mall.stat.OrderDailyActive",
+  "fields":[
+    {"name":"statTime.year","alias":"year"},
+    {"name":"statTime.month","alias":"aggvalue"},
+    {"name":"orderQty","alias":"totalOrderQty","aggr":"sum"},
+    {"name":"orderMoney","alias":"totalOrderMoney","aggr":"sum"}
+  ],
+  "conditions":[
+    {"name":"statTime","op":"between","v1":"current_date-11m/min_m","v2":"current_date|max"}
+  ],
+  "groups":[
+    {"name":"statTime.year"},{"name":"statTime.month"}
+  ],
+  "orders":[
+    {"name":"year"},{"name":"aggvalue"}
+  ]
+}
+```
+> 术语
+- 查询实体：查询方案以哪个实体为参照物展开，不一定为聚合根实体。
+> 几种查询形态
+- 简单查询<br/>
+  - 查询一个实体及关联实体的数据，例如：查询订单Order数据，并一起查询客户Customer名称。
+  - 查询方案形如：
+    ```json
+    {
+        "fields": [
+            {"name":"code"},{"name":"vouchDate"},{"name":"customer.name"}
+        ]
+    }
+    ```
+  - 查询数据形态：查询实体的数据条数等于最终数据条数
+- 关联查询
+  - 查询一个实体及组合实体的数据，例如：查询订单Order及其子实体OrderDetail数据。
+  - 查询方案形如：
+    ```json
+    {
+        "fields": [
+            {"name":"code"},{"name":"vouchDate"},{"name":"details.price"},{"name":"details.goods.name"}
+        ]
+    }
+    ```
+  - 查询数据形态：查询实体的数据条数一般小于最终数据条数，产生的笛卡尔积中，查询实体的数据会重复
+- 组合查询
+  - 查询一个实体即相关实体（可以没有直接的实体关系）的数据，例如：查询订单Order和子实体OrderDetail
+  - 查询方案形如：
+    ```json
+    {
+        "fields": [
+            {"name":"code"},{"name":"vouchDate"}
+        ],
+        "compositions":[
+            {
+                "name": "details",
+                "fields": [
+                    {"name":"goods.name"},{"name":"price"}
+                ]
+            }
+        ]
+    }
+    ```
+    又如：Order和Customer
+    ```json
+    {
+        "fields": [
+            {"name":"code"},{"name":"vouchDate"}
+        ],
+        "compositions":[
+            {
+                "name": "customer",
+                "filter": "first",
+                "fields": [
+                    {"name":"code"},{"name":"name"}
+                ]
+            }
+        ]
+    }
+    ```
+  - 查询数据形态：查询实体的数据条数等于最终数据条数，相关实体数据以挂载在父数据下面。
+- 子查询
+  - 查询一个实体，条件来源于其它查询方案，例如：订单明细OrderDetail的商品来自数据权限范围的商品
+  - 查询方案形如：
+    ```json
+    {
+        "fields": [
+            {"name":"goods.name"},{"name":"price"}
+        ],
+        "conditions": [
+            {"name":"goods","op":"in","v1":"@#goods_auth"}
+        ],
+        "references": [
+            {
+                "name":"goods_auth",
+                "fullname":"base.auth.DataAuth",
+                "fields": [
+                    {"name":"key"}
+                ],
+                "conditions": [
+                    {"name":"type","op":"eq","v1":"goods"}
+                    // 运行期框架会自动增加user等隔离字段的条件
+                    // 例如：{"name":"role","op":"in","v1":[当前user的role列表]}
+                ]
+            }
+        ]
+    }
+    ```
+  - 查询数据形态：与其它查询方式查询结果相同，主要是查询条件不同
+- 聚合查询
+  - 查询数据源来自多个实体，例如：按月查询OrderDailyActive的汇总数据，同时查询商品总数、商品分类总数
+  - 查询方案形如：<br/>
+    一个聚合查询可以有多个查询方案，分别查询不同数据源数据。
+    ```json
+    [
+        {
+            "name": "orderStat",
+            "fullname": "mall.stat.OrderDailyActive",
+            "fields": [
+                {"name":"statTime.year","alias":"year"},
+                {"name":"statTime.month","alias":"aggvalue"},
+                {"name":"orderQty","alias":"totalOrderQty","aggr":"sum"}
+            ]
+        },
+        {
+            "name": "goodsStat",
+            "fullname": "cbo.goods.Goods",
+            "fields": [
+                {"name":"1","alias":"totalCount","aggr":"count"}
+            ]
+        },
+        {
+            "name": "goodsCateStat",
+            "fullname": "cbo.goods.GoodsCate",
+            "fields": [
+                {"name":"1","alias":"totalCount","aggr":"count"}
+            ]
+        }
+    ]
+    ```
+  - 查询数据形态：根据name区分不同数据源的数据。
+### 自身属性
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+| name | 查询方案名称 | 否 | 查询组或组合查询时必须<br/>1、子查询时，主查询方案条件根据此标志符定位该方案；<br/>2、组合查询时，是实体属性路径，可以由"."符号连接，<br/>没有rel时根据name推测与主查询的实体关系；<br/>3、应用于查询组，用于区分不同数据源的数据。|
+| alias | 组合查询数据别名 | 否 | 组合查询最好使用<br/>应用于组合查询，子查询结果合并到主结果集中的字段名。|
+| fullname | 查询实体 | 否 | 查询组、子查询时必须<br/>由现有数据无法推断查询方案的查询实体时，需要指定查询实体名称 |
+| rel | 组合查询数据关系 | 否 | 应用于组合查询，表示主子查询方案间的数据关系。<br/>为空时，由name推断主子方案间的数据关系。<br/>rel格式为：子方案查询字段=主方案查询字段|
 
 ### 查询字段
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 是 | 使用"."操作符计算关联路径，例如：customer.name，可以是公式表达式|
+|alias|别名| 否 | 最终数据结构字段，默认是将"."符号替换成"_"符号 |
+|format|格式| 否 | |
+|aggr|聚集函数| 否 | sum,count 等聚合函数的简便写法 |
+> 示例
+```json
+{
+    "fields": [
+        {"name":"code"},
+        {"name":"customer.name"},
+        {"name":"details.goods.goodsCate.name","alias":"goodsCate_name"}
+    ]
+}
+```
 ### 查询条件
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 是 | 使用"."操作符计算关联路径 |
+|join|关联语句| 是 | 如果join中字段名与name有相同的内容，可以将name部分省略，例如：.qty>100 |
+|joinType|关联类型| 否 | inner,left,alone，其中alone和inner或left组合使用，alone表示仅使用join中的<br/>过滤条件，不再与默认条件and运算 |
+> 示例
+```json
+{
+    "joins":[
+        {"name":"details","join":".order=id && .goods=1001","joinType":"left,alone"}
+    ]
+}
+```
 #### 简单条件
-#### 组合条件
-#### 分组条件
-### 查询关联
-### 查询分组
-### 查询排序
-### 查询分页
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 是 | 使用"."操作符计算关联路径，可以是公式表达式 |
+|op|操作符| 否 |默认为eq，参见下面的操作符说明 |
+|v1|值1| 否 | 操作符为in或nin时，v1为数组或集合 |
+|v2|值2| 否 | 在操作符为between时有效 |
 
-## 查询方案示例（本地查询）
+> 操作符说明
+---
+| 操作符 | 含义 |
+| --- | --- |
+| eq | 等于 |
+| neq | 不等于 |
+| lt | 小于 |
+| gt | 大于 |
+| elt | 小于等于 |
+| egt | 大于等于 |
+| leftlike | 左包含 |
+| rightlike | 右包含 |
+| like | 包含 |
+| in | 在…之内 |
+| nin | 不在…之内 |
+| between | 在…和…之间，结合v2 |
+| is_null | 空，字符串null和''都是空 |
+| is_not_null | 非空，字符串null和''之外的是非空 |
+
+操作符可以为两个，其中一个操作符为is_null或者is_not_null，构成and和or关系，or关系格式为op1 || op2，and关系格式为op1 && op2。
+
+> 示例
+```json
+{
+    "conditions": [
+        {"name":"statTime","op":"between","v1":"current_date-11m/min_m","v2":"current_date|max"},
+        {"name":"orderMoney","op":"lt||is_null","v1":10000}
+    ]
+}
+```
+```json
+{
+    "conditions": [
+        {"name":"status","op":"in","v1":[1,2,3]}
+    ]
+}
+```
+#### 组合条件
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|名称| 否 | 组合条件名称 |
+|op|字段名称| 否 | 默认为 and |
+|items|子查询条件| 是 | 子查询条件可以为简单条件、组合条件 |
+
+> 示例
+```json
+{
+    "conditions": [
+        {
+            "op":"or","items":[
+                {"name":"statTime","op":"between","v1":"current_date-11m/min_m","v2":"current_date|max"},
+                {"name":"orderMoney","op":"lt||is_null","v1":10000}
+            ]
+        }
+    ]
+}
+```
+
+### 查询分组
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 是 | 使用"."操作符计算关联路径 |
+
+> 示例
+```json
+{
+    "groups":[
+        {"name":"goodsCate"}
+    ]
+}
+```
+
+#### 分组条件
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 否 | 分组条件名称 |
+|op|字段名称| 否 | 默认为 and |
+|items|子查询条件| 是 | 子查询条件可以为简单条件、组合条件 |
+
+> 示例
+```json
+{
+    "conditions": [
+        {"name":"count(1)","op":"gt","v1":1}
+    ]
+}
+```
+```json
+{
+    "conditions": [
+        {"name":"sum(totalMoney)","op":"gt","v1":0}
+    ]
+}
+```
+
+### 查询排序
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|name|字段名称| 是 | 使用"."操作符计算关联路径 |
+|order|排序方式| 否 | asc 升序，desc 降序 |
+
+> 示例
+```json
+{
+    "orders":[
+        {"name":"vouchDate","order":"desc"}
+    ]
+}
+```
+### 查询分页
+| 字段 | 含义 | 必须 | 说明 |
+| --- | --- | --- | --- |
+|pageIndex| 页码| 否 | 默认为1 |
+|pageSize| 页大小| 否 | 默认为10 |
+> 示例
+```json
+{
+    "pager": {"pageIndex":1, "pageSize": 100}
+}
+```
+
+### 公式表达式语法
+- 常量(const)<br/>
+![const](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/const.png "const")
+- 名称(name)<br/>
+![name](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/name.png "name")
+- 字段名称(field)<br/>
+![field](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/field.png "field")
+- 表达式(expression)<br/>
+![expression](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/expression.png "expression")
+- 函数(function)<br/>
+![function](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/function.png "function")
+- 条件(condition)<br/>
+![condition](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/condition.png "condition")
+- 条件语句(statement)<br/>
+![statement](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/statement.png "statement")
+
+## 查询方案示例
+以下所有示例均在域隔离级别为**非隔离**的环境中进行。
+### 简单查询
+- 查询方案示例
+```json
+{
+  "fullname": "mall.order.Order",
+  "fields":[
+    {"name":"code"},{"name":"vouchDate"},{"name":"customer.name"}
+  ],
+  "conditions":[
+    {"name":"vouchDate","op":"between","v1":"current_date-1m/min_m","v2":"current_date/max"}
+  ],
+  "orders":[
+    {"name":"vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2}
+}
+```
+- 查询SQL
+```sql
+select T0.code as `code`,T0.vouch_date as `vouchDate`,T1.name as `customer_name`
+from mall_order T0
+inner join cbo_customer as T1 on T1.id=T0.customer_id
+where T0.vouch_date between ? and ?
+order by T0.vouch_date desc
+limit 0,2
+```
+参数：'2019-03-01 00:00:00', '2019-04-29 23:59:59'
+- 查询结果
+```json
+{
+	"totalCount": 31212,
+	"data": [{
+		"code": "mall20190429115949",
+		"vouchDate": "2019-04-28 13:00:00",
+		"customer_name": "买家59158"
+	}, {
+		"code": "mall20190429120119",
+		"vouchDate": "2019-04-28 13:00:00",
+		"customer_name": "买家59158"
+	}]
+}
+```
+
 ### 关联查询
 - 查询方案示例
+```json
+{
+  "fullname": "mall.order.Order",
+  "fields":[
+    {"name":"code"},
+    {"name":"vouchDate"},
+    {"name":"details.goods.name","alias":"goods_name"},
+    {"name":"details.price","alias":"price"}
+  ],
+  "conditions":[
+    {"name":"vouchDate","op":"between","v1":"current_date-1m/min_m","v2":"current_date/max"}
+  ],
+  "orders":[
+    {"name":"vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2}
+}
+```
 - 查询SQL
 ```sql
+select T0.code as `code`,T0.vouch_date as `vouchDate`,T1.price as `price`,T2.name as `goods_name`
+from mall_order T0
+inner join mall_order_detail as T1 on T1.order_id=T0.id
+inner join cbo_goods as T2 on T2.id=T1.goods_id
+where T0.vouch_date between ? and ?
+order by T0.vouch_date desc
+limit 0,2
 ```
+参数：'2019-03-01 00:00:00', '2019-04-29 23:59:59'
 - 查询结果
 ```json
+{
+	"totalCount": 62424,
+	"data": [{
+		"code": "mall20190429115949",
+		"vouchDate": "2019-04-28 13:00:00",
+		"price": 96.53,
+		"goods_name": "商品1229"
+	}, {
+		"code": "mall20190429115949",
+		"vouchDate": "2019-04-28 13:00:00",
+		"price": 9.17,
+		"goods_name": "商品2069"
+	}]
+}
 ```
+
 ### 组合查询
 - 查询方案示例
-- 查询SQL
-```sql
-```
-- 查询结果
 ```json
+{
+  "fullname": "mall.order.Order",
+  "fields":[
+    {"name":"id"},
+    {"name":"code"},
+    {"name":"vouchDate"}
+  ],
+  "conditions":[
+    {"name":"vouchDate","op":"between","v1":"current_date-1m/min_m","v2":"current_date/max"}
+  ],
+  "orders":[
+    {"name":"vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2},
+  "compositions":[
+    {
+      "name":"details",
+      "fields":[
+        {"name":"goods.name"},
+        {"name":"price"}
+      ]
+    }
+  ]
+}
 ```
+- 查询SQL
+> 主查询方案
+```sql
+select T0.id as `id`,T0.code as `code`,T0.vouch_date as `vouchDate`
+from mall_order T0
+where T0.vouch_date between ? and ?
+order by T0.vouch_date desc
+limit 0,2
+```
+参数：'2019-03-01 00:00:00', '2019-04-29 23:59:59'
+> 组合查询方案
+```sql
+select T0.price as `price`,T0.order_id as `order`,T1.name as `goods_name`
+from mall_order_detail T0
+inner join cbo_goods as T1 on T1.id=T0.goods_id
+where T0.order_id in (?,?)
+```
+参数：由主查询方案查询结果自动提供
+
+- 查询结果<br/>
+组合查询方案查询结果挂在主查询方案查询结果下。
+```json
+{
+	"totalCount": 31212,
+	"data": [{
+		"id": 1201117416395008,
+		"code": "mall20190429115949",
+		"vouchDate": "2019-04-28 13:00:00",
+		"details": [{
+			"price": 96.53,
+			"order": 1201117416395008,
+			"goods_name": "商品1229"
+		}, {
+			"price": 9.17,
+			"order": 1201117416395008,
+			"goods_name": "商品2069"
+		}]
+	}, {
+		"id": 1201118892282112,
+		"code": "mall20190429120119",
+		"vouchDate": "2019-04-28 13:00:00",
+		"details": [{
+			"price": 96.53,
+			"order": 1201118892282112,
+			"goods_name": "商品1229"
+		}, {
+			"price": 9.17,
+			"order": 1201118892282112,
+			"goods_name": "商品2069"
+		}]
+	}]
+}
+```
+
 ### 子查询
 - 查询方案示例
+```json
+{
+  "fullname": "mall.order.OrderDetail",
+  "fields":[
+    {"name":"order.code","alias":"code"},
+    {"name":"order.vouchDate","alias":"vouchDate"},
+    {"name":"goods.name"},
+    {"name":"price"}
+  ],
+  "conditions":[
+    {"name":"goods","op":"in","v1":"@#goods_auth"}
+  ],
+  "orders":[
+    {"name":"order.vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2},
+  "references":[
+    {
+      "name":"goods_auth",
+      "fullname":"base.auth.DataAuth",
+      "fields":[
+        {"name":"key"}
+      ],
+      "conditions":[
+        {"name":"type","op":"eq","v1":"goods"}
+      ]
+    }
+  ]
+}
+```
 - 查询SQL
 ```sql
+select T0.price as `price`,T1.name as `goods_name`,T2.code as `code`,T2.vouch_date as `vouchDate`
+from mall_order_detail T0
+inner join cbo_goods as T1 on T1.id=T0.goods_id
+inner join mall_order as T2 on T2.id=T0.order_id
+where T0.goods_id in (select T0.obj_id as `key`
+from base_data_auth T0
+where (T0.type=? and T0.role in (?,?))
+)
+order by T2.vouch_date desc
+limit 0,2
 ```
+参数：'goods', 'role1', 'role2'
 - 查询结果
 ```json
+{
+	"totalCount": 634,
+	"data": [{
+		"price": 723.70,
+		"goods_name": "商品3428",
+		"code": "DT20190424841",
+		"vouchDate": "2019-04-24 13:00:00"
+	}, {
+		"price": 588.91,
+		"goods_name": "商品2789",
+		"code": "DT20190424924",
+		"vouchDate": "2019-04-24 13:00:00"
+	}]
+}
 ```
+
 ### 聚合查询
-- 查询方案示例
+- 查询方案示例<br/>
+有3个查询方案分别查询不同的数据源。
+```json
+[
+  {
+    "name": "orderStat",
+    "fullname": "mall.stat.OrderDailyActive",
+    "fields": [
+      {"name":"statTime.year","alias":"year"},
+      {"name":"statTime.month","alias":"aggvalue"},
+      {"name":"orderQty","alias":"totalOrderQty","aggr":"sum"}
+    ],
+    "conditions":[
+      {"name":"statTime","op":"between","v1":"current_date-3m/min_m","v2":"current_date/max"}
+    ],
+    "groups":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ],
+    "orders":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ]
+  },
+  {
+    "name": "goodsStat",
+    "fullname": "cbo.goods.Goods",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  },
+  {
+    "name": "goodsCateStat",
+    "fullname": "cbo.goods.GoodsCate",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  }
+]
+```
 - 查询SQL
+> 查询方案1
 ```sql
+select sum(T0.order_qty) as `totalOrderQty`,T1.year as `year`,T1.month as `aggvalue`
+from stat_order_daily T0
+left join dim_date as T1 on T1.d=T0.stat_time
+where T0.stat_time between ? and ?
+group by T1.year,T1.month
+order by T1.year,T1.month
+```
+参数：'2019-01-01 00:00:00', '2019-04-29 23:59:59'
+> 查询方案2
+```sql
+select count(1) as `totalCount`
+from cbo_goods T0
+```
+> 查询方案3
+```sql
+select count(1) as `totalCount`
+from cbo_goods_cate T0
 ```
 - 查询结果
 ```json
+{
+    // 查询方案3结果
+	"goodsCateStat": {
+		"flag": 1,
+		"data": [{
+			"totalCount": 300
+		}],
+		"totalCount": 1,
+		"status": 200
+	},
+    // 查询方案2结果
+	"goodsStat": {
+		"flag": 1,
+		"data": [{
+			"totalCount": 3000
+		}],
+		"totalCount": 1,
+		"status": 200
+	},
+    // 查询方案1结果
+	"orderStat": {
+		"flag": 1,
+		"data": [{
+			"totalOrderQty": 30123,
+			"year": 2019,
+			"aggvalue": 1
+		}, {
+			"totalOrderQty": 31798,
+			"year": 2019,
+			"aggvalue": 2
+		}, {
+			"totalOrderQty": 32893,
+			"year": 2019,
+			"aggvalue": 3
+		}, {
+			"totalOrderQty": 29329,
+			"year": 2019,
+			"aggvalue": 4
+		}],
+		"totalCount": 4,
+		"status": 200
+	}
+}
 ```
