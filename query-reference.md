@@ -2,14 +2,14 @@
 ## 用户模型参考
 > [电子商城用户模型](mall-model.md)
 - 电子商城类图
-![电子商城类图](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/mall.png "Mall Model")
+![电子商城类图](/images/imeta/e/mall.png "Mall Model")
 - 电子商城统计分析
-![电子商城统计分析](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/mall-stat.png "Mall Statistic Model")
+![电子商城统计分析](/images/imeta/e/mall-stat.png "Mall Statistic Model")
 
 ## 查询方案
-![查询方案](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-schema.png "QuerySchema")
+![查询方案](/images/imeta/e/query-schema.png "QuerySchema")
 
-![查询条件](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-condition.png "QueryCondition")
+![查询条件](/images/imeta/e/query-condition.png "QueryCondition")
 
 查询方案为统一查询引擎对外开发的核心数据结构，所有的查询配置都要遵守查询方案的定义。
 
@@ -98,7 +98,7 @@
 - 子查询
   - 查询一个实体，条件来源于其它查询方案，例如：订单明细OrderDetail的商品来自数据权限范围的商品
   - 查询方案形如：
-    ```json
+    ```js
     {
         "fields": [
             {"name":"goods.name"},{"name":"price"}
@@ -325,19 +325,19 @@
 
 ### 公式表达式语法
 - 常量(const)<br/>
-![const](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/const.png "const")
+![const](/images/field/e/const.png "const")
 - 名称(name)<br/>
-![name](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/name.png "name")
+![name](/images/field/e/name.png "name")
 - 字段名称(field)<br/>
-![field](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/field.png "field")
+![field](/images/field/e/field.png "field")
 - 表达式(expression)<br/>
-![expression](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/expression.png "expression")
+![expression](/images/field/e/expression.png "expression")
 - 函数(function)<br/>
-![function](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/function.png "function")
+![function](/images/field/e/function.png "function")
 - 条件(condition)<br/>
-![condition](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/condition.png "condition")
+![condition](/images/field/e/condition.png "condition")
 - 条件语句(statement)<br/>
-![statement](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/field/e/statement.png "statement")
+![statement](/images/field/e/statement.png "statement")
 
 ## 查询方案示例
 以下所有示例均在域隔离级别为**非隔离**的环境中进行。
@@ -640,7 +640,7 @@ select count(1) as `totalCount`
 from cbo_goods_cate T0
 ```
 - 查询结果
-```json
+```js
 {
     // 查询方案3结果
 	"goodsCateStat": {
