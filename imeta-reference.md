@@ -9,8 +9,8 @@ iMeta是一个基于JAVA语言开发的模型驱动（MDD）开发框架，以�
 5. Extensible：iMeta框架采用分层架构，完全基于接口，底层使用接口定义系统脉络、体现系统整体结构；同时也提供了大量的默认实现，主要位于Spring集成层中，这些默认实现可以被替换、扩展。
 ## 使用前提
 iMeta框架已经为Web、数据库、No-Sql、异步服务等提供了默认实现，为了更加高效开发，最好具备以下知识。
-1. [必选]具有一定软件工程基础：对UML有一定了解，能够绘制UML类图，理解类间关系（继承、实现、关联、组合）的含义，这些是iMeta开发的原材料。
-2. [可选]具有一定WEB开发基础：能够理解cookie、cors、http、ajax等常见概念。
+1. [必选]具有一定软件工程基础：对UML有一定了解，能够绘制UML类图，理解类间关系（继承、实现、关联、组合）的含义，最好能够将业务中共性应用场景、模型抽象出基类或接口，这些是iMeta开发的原材料。
+2. [可选]具有一定WEB开发基础：了解cookie、cors、http、ajax等常见概念。
 3. [可选]具有一定No-SQL基础：当应用程序使用No-Sql数据库（例如：Redis）存储数据时，需要了解相关No-Sql一些常见操作。
 4. [可选]具有一定异步编程知识：当应用程序为高性能异步应用时，需要了解Reactor、WebFlux、No-Sql异步驱动一些基本知识。
 5. [可选]具有一定架构能力：能够合理拆分服务，实现高内聚低耦合的微服务架构。
@@ -52,10 +52,55 @@ iMeta参考Spring Boot的实现方式，实现了自动配置，开发时引入j
 ### iMeta & Spring WebFlux
 利用微服务框架可以很容易实现应用程序水平扩展，但通过WebFlux反应式框架实现纵向并发能力提升越来越流行，通过较少的资源提供更大的并发能力是一种趋势，尤其是在面向No-Sql数据库的应用中。
 iMeta提供了集成WebFlux的能力，可以方便的开发涉及任务调度、网关、No-Sql数据库的应用程序。
+## 整体架构
+![iMeta Framework Architecture](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/framework.png "iMeta Framework Architecture")
+- 总体思想<br/>
+    模型驱动，面向服务，快速集成。
+- 系统架构<br/>
+    分层体系，接口层用于定义系统脉络、体现系统整体结构；<br/>
+    实现层借助Spring boot自动加载、灵活扩展，用于实现网络、数据库、缓存、邮件、调度任务等功能。
+- 面向微服务<br/>
+    以服务为单元进行数据处理，将本地数据库、缓存服务、远程服务无缝集成，对开发人员透明，开发人员的视角均为用户模型。
+- MDA/D<br/>
+    模型驱动架构、模型驱动开发，一切以用户模型为中心，以设计的视角开发高质量应用，有利于培养高素质团队，有效保留核心资产。
+- 面向接口<br/>
+    尽可能早的在接口层中定义系统结构、体现系统设计思想；尽可能晚的与具体技术结合，降低耦合。
+- 配置大于开发，约定大于配置<br/>
+    一切以**零**代码为目标，提供BOOT-STARTER一站式零JAVA代码服务组件。
+- 多种扩展机制<br/>
+  - 框架层提供*MetaBean、*MetaAware等接口，自动注入具体实现类。
+  - 核心接口均有默认实现类，通过设置优先级，特定实现类可以替换默认实现类。
+  - 提供拦截器机制，可以在核心方法前后进行处理。
+  - 提供事件机制，重要环节会触发事件，通知Listener处理。
+  - 提供消息机制，在主流程完成时发布消息，提供事务外异步处理机制。
+  - 根据环境变量、配置参数可以include外部类，exclude默认类。
+
 ## 元数据加载流程
 ![元数据加载流程](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/metadata-load.png "MD LOAD")
 元数据加载主要分为两个阶段：元数据定义阶段、元数据阶段，通过实现不同接口，可以进行功能扩展。
 元数据定义是元数据的原材料，经过加工可以转换成元数据。
+
+## 应用场景
+主要用于微服务化的数据查询、持久化和数据转换处理，例如：CRUD、导入导出，还提供任务调度、邮件、HTTP、代码生成等能力。
+- 适用于服务器端开发
+  - 基于关系型数据库的应用
+  - 基于No-Sql的应用
+  - 基于基于关系型数据库、No-Sql、远程服务的混合型微服务架构应用
+- 集成微服务框架
+  - Rest：Spring Cloud
+  - RPC：Dubbo
+
+## 核心组件
+- 元数据Metadata：Component、Interface、Entity、Property、DataType、Enumeration
+- 接口：*MetaBean、*MetaAware，用于默认实现和扩展开发
+- 事件通知：*Listener、*Event，用于扩展开发
+- 仓库：*Registry
+- 帮助类：*Walker、KeyIterator、Objectlizer
+- CRUD：*SqlBuilder、*Service、QuerySchema
+- 入口：MetaBeanFactory、TplBeanFactory
+- 代码生成：*Builder、*Func
+- 自动配置：*AutoConfig
+- 解析器：*Parser、*Node、*Tree
 
 ## 核心概念
 ### 用户模型 UserModel
@@ -70,6 +115,22 @@ iMeta提供了集成WebFlux的能力，可以方便的开发涉及任务调度�
 用户模型中的静态类图可以认为是iMeta所需的原材料，基于此原材料生成元数据。<br/>
 用户模型通常包含以下几个UML元素：包、类、属性、关系。关系主要描述类间关系，有继承、实现、关联、组合。<br/>
 iMeta结合数据仓库模型，能够提供极为灵活的统计查询，一般情况下，无需一行JAVA代码。
+
+### 类间关系
+- 关联 vs 组合<br/>
+![关联 vs 组合](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipC.png "关联 vs 组合")
+  - 订单Order与订单明细OrderDetail为组合关系，订单Order与买家Customer、订单明细OrderDetail与商品Goods间为关联关系。
+  - has-a (Association), contains-a (Composition)
+  - 组合是一种关系更加紧密的关联关系，重点是关系强弱和对象生命周期；
+  - 对于0..1的组合与关联无法准确区别时，考虑删除引用对象时，被引用对象是否同时消失，如果是，就是组合关系，否则是关联关系。
+- 泛化/继承 vs 实现
+![泛化/继承 vs 实现](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipD.png "泛化/继承 vs 实现")
+  - 商品分类GoodsCate与档案Archive间为继承关系，商品分类GoodsCate与树型接口Tree间为实现关系。
+  - is-a (Generalization), comply-with (Realization)
+  - 继承和实现基于M2层编程时，除了校验规则并没有明显区别；在基于M1层（即用户模型层）编程时，继承和实现区别很大。
+  - 两者语义不同，继承基类用于划分类型体系，实现接口用于规定行为准则/协议；
+  - 在扩展性方面，实现一般优于继承，不同的实现类可以灵活替换，但继承有类型体系的含义，无法随意扩展子类。
+  - 开闭原则中对修改关闭、对扩展开放，核心就是面向接口编程，使用精简的接口抽象公共行为/准则/协议。
 
 ### 元数据定义 MetadataDefinition
 ![元数据定义](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/md-definition.png "MetadataDefinition")
