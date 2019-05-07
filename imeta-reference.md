@@ -118,13 +118,13 @@ iMeta结合数据仓库模型，能够提供极为灵活的统计查询，一般
 
 ### 类间关系
 - 关联 vs 组合<br/>
-![关联 vs 组合](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipC.png "关联 vs 组合")
+  - ![关联 vs 组合](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipC.png "关联 vs 组合")
   - 订单Order与订单明细OrderDetail为组合关系，订单Order与买家Customer、订单明细OrderDetail与商品Goods间为关联关系。
   - has-a (Association), contains-a (Composition)
   - 组合是一种关系更加紧密的关联关系，重点是关系强弱和对象生命周期；
   - 对于0..1的组合与关联无法准确区别时，考虑删除引用对象时，被引用对象是否同时消失，如果是，就是组合关系，否则是关联关系。
 - 泛化/继承 vs 实现
-![泛化/继承 vs 实现](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipD.png "泛化/继承 vs 实现")
+  - ![泛化/继承 vs 实现](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/relationshipD.png "泛化/继承 vs 实现")
   - 商品分类GoodsCate与档案Archive间为继承关系，商品分类GoodsCate与树型接口Tree间为实现关系。
   - is-a (Generalization), comply-with (Realization)
   - 继承和实现基于M2层编程时，除了校验规则并没有明显区别；在基于M1层（即用户模型层）编程时，继承和实现区别很大。
