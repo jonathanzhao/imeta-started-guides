@@ -690,3 +690,191 @@ from cbo_goods_cate T0
 	}
 }
 ```
+### 模版渲染查询
+- 查询方案示例
+```json
+[
+  {
+    "name": "orderStat",
+    "fullname": "mall.stat.OrderDailyActive",
+    "fields": [
+      {"name":"statTime.year","alias":"year"},
+      {"name":"statTime.month","alias":"aggvalue"},
+      {"name":"orderQty","alias":"totalOrderQty","aggr":"sum"}
+    ],
+    "conditions":[
+      {"name":"statTime","op":"between","v1":"current_date-11m/min_m","v2":"current_date/max"}
+    ],
+    "groups":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ],
+    "orders":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ]
+  },
+  {
+    "name": "goodsStat",
+    "fullname": "cbo.goods.Goods",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  },
+  {
+    "name": "goodsCateStat",
+    "fullname": "cbo.goods.GoodsCate",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  }
+]
+```
+- 查询SQL
+> 查询方案1
+```sql
+select sum(T0.order_qty) as `totalOrderQty`,T1.year as `year`,T1.month as `aggvalue`
+from stat_order_daily T0
+left join dim_date as T1 on T1.d=T0.stat_time
+where T0.stat_time between ? and ?
+group by T1.year,T1.month
+order by T1.year,T1.month
+```
+参数：'2018-06-01 00:00:00', '2019-05-07 23:59:59'
+> 查询方案2
+```sql
+select count(1) as `totalCount`
+from cbo_goods T0
+```
+> 查询方案3
+```sql
+select count(1) as `totalCount`
+from cbo_goods_cate T0
+```
+- 查询原始结果
+```json
+{
+	"flag": 1,
+	"msg": "查询成功",
+	"data": {
+		"goodsCateStat": {
+			"flag": 1,
+			"data": [{
+				"totalCount": 300
+			}],
+			"totalCount": 1,
+			"status": 200
+		},
+		"goodsStat": {
+			"flag": 1,
+			"data": [{
+				"totalCount": 3000
+			}],
+			"totalCount": 1,
+			"status": 200
+		},
+		"orderStat": {
+			"flag": 1,
+			"data": [{
+				"totalOrderQty": 29568,
+				"year": 2018,
+				"aggvalue": 6
+			}, {
+				"totalOrderQty": 30520,
+				"year": 2018,
+				"aggvalue": 7
+			}, {
+				"totalOrderQty": 29475,
+				"year": 2018,
+				"aggvalue": 8
+			}, {
+				"totalOrderQty": 23738,
+				"year": 2018,
+				"aggvalue": 9
+			}, {
+				"totalOrderQty": 35170,
+				"year": 2018,
+				"aggvalue": 10
+			}, {
+				"totalOrderQty": 29898,
+				"year": 2018,
+				"aggvalue": 11
+			}, {
+				"totalOrderQty": 32235,
+				"year": 2018,
+				"aggvalue": 12
+			}, {
+				"totalOrderQty": 30123,
+				"year": 2019,
+				"aggvalue": 1
+			}, {
+				"totalOrderQty": 31798,
+				"year": 2019,
+				"aggvalue": 2
+			}, {
+				"totalOrderQty": 32893,
+				"year": 2019,
+				"aggvalue": 3
+			}, {
+				"totalOrderQty": 33687,
+				"year": 2019,
+				"aggvalue": 4
+			}],
+			"totalCount": 11,
+			"status": 200
+		}
+	},
+	"status": 200
+}
+```
+- 查询渲染模版
+> [模版参考手册](template-reference.md "模版参考手册")
+```java
+{
+    "flag": 1,
+    "msg": "success",
+    "status": 200,
+    "data": {
+        "goodsCateTotalCount": <#=goodsCateStat.data[0].totalCount#>,
+        "goodsTotalCount": <#=goodsStat.data[0].totalCount#>,
+        "orderGrowth": {
+            <#& orderStat.data,_with1 { #>
+            "axis": {
+                "data": [
+                <#*(item:_with1){#>
+                   <#=totalOrderQty#><#?(IS_LAST!=true)#>,<#}#>
+                <#}#>
+                ]
+            },
+            "series": {
+                "data": [
+                <#*(item:_with1){#>
+                    "<#=year#>-<#=aggvalue#>"<#?(IS_LAST!=true)#>,<#}#>
+                <#}#>
+                ]
+            },
+            "name": "订单增长趋势"
+            <#}#>
+        }
+    }
+}
+```
+- 查询渲染结果
+```json
+{
+	"flag": 1,
+	"msg": "success",
+	"status": 200,
+	"data": {
+		"goodsCateTotalCount": 300,
+		"goodsTotalCount": 3000,
+		"orderGrowth": {
+			"axis": {
+				"data": [29568, 30520, 29475, 23738, 35170, 29898, 32235, 30123, 31798, 32893, 33687]
+			},
+			"series": {
+				"data": ["2018-6", "2018-7", "2018-8", "2018-9", "2018-10", "2018-11", "2018-12", "2019-1", "2019-2", "2019-3", "2019-4"]
+			},
+			"name": "订单增长趋势"
+		}
+	}
+}
+```
