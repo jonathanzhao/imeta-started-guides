@@ -9,10 +9,10 @@ iMeta是一个基于JAVA语言开发的模型驱动（MDD）开发框架，以�
 
 ## Documentation
 > 参考手册
-- [设计思想](imeta-reference.md)
+- [概述 & 设计思想](imeta-reference.md)
 - [统一查询引擎](query-reference.md)
-- [持久化](persistence-reference.md)
-- [模版及代码生成](template-reference.md)
+- [统一持久化](persistence-reference.md)
+- [模版 & 代码生成](template-reference.md)
 - [数据转换](dts-reference.md)
 
 > 快速上手
