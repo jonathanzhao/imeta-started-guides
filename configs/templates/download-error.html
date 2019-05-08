@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-cmn-Hans">
+    <head>
+        <title>下载提示</title>
+    </head>
+    <body>
+    <script th:inline="javascript">
+        parent.window.postMessage({"type":"msg","targetOrigin":[[${origin}]],"data":{"level":"error","msg":[[${msg}]]}}, [[${origin}]]);
+    </script>
+    </body>
+</html>

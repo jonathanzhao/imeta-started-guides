@@ -1,0 +1,34 @@
+[
+  {
+    "name": "orderStat",
+    "fullname": "mall.stat.OrderDailyActive",
+    "fields": [
+      {"name":"statTime.year","alias":"year"},
+      {"name":"statTime.month","alias":"aggvalue"},
+      {"name":"orderQty","alias":"totalOrderQty","aggr":"sum"}
+    ],
+    "conditions":[
+      {"name":"statTime","op":"between","v1":"current_date-11m/min_m","v2":"current_date/max"}
+    ],
+    "groups":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ],
+    "orders":[
+      {"name":"statTime.year"},{"name":"statTime.month"}
+    ]
+  },
+  {
+    "name": "goodsStat",
+    "fullname": "cbo.goods.Goods",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  },
+  {
+    "name": "goodsCateStat",
+    "fullname": "cbo.goods.GoodsCate",
+    "fields": [
+      {"name":"1","alias":"totalCount","aggr":"count"}
+    ]
+  }
+]

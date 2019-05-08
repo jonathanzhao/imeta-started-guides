@@ -1,0 +1,29 @@
+{
+  "fullname": "mall.order.OrderDetail",
+  "fields":[
+    {"name":"order.code","alias":"code"},
+    {"name":"order.vouchDate","alias":"vouchDate"},
+    {"name":"goods.name"},
+    {"name":"price"}
+  ],
+  "conditions":[
+    {"name":"goods","op":"in","v1":"@#goods_auth"}
+  ],
+  "orders":[
+    {"name":"order.vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2},
+  "references":[
+    {
+      "name":"goods_auth",
+      "fullname":"base.auth.DataAuth",
+      "fields":[
+        {"name":"key"}
+      ],
+      "conditions":[
+        {"name":"type","op":"eq","v1":"goods"},
+        {"name":"role","op":"in","v1":["saler","saler2"]}
+      ]
+    }
+  ]
+}

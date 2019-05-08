@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components xmlns="http://www.imeta.org/meta"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.imeta.org/meta http://www.imeta.org/meta/meta.xsd">
+    <references>
+        <reference file="java.xml"/>
+    </references>
+    <!--common interfaces-->
+    <component name="itf" moduleName="base" title="通用接口">
+        <interface name="Audit" title="审计信息">
+            <properties>
+                <property name="createTime" columnName="create_time" title="创建时间" type="DateTime" modeType="Insert"/>
+                <property name="creator" columnName="creator" title="创建人" type="String" length="50" modeType="Insert"/>
+                <property name="modifyTime" columnName="modify_time" title="修改时间" type="DateTime" modeType="Update"/>
+                <property name="modifier" columnName="modifier" title="修改人" type="String"  length="50" modeType="Update"/>
+            </properties>
+        </interface>
+        <interface name="AutoCode" title="自动编号">
+            <properties>
+                <property name="code" columnName="code" title="编号" type="String" length="50" isRequired="true"/>
+            </properties>
+        </interface>
+        <interface name="BarCode" title="条码">
+            <properties>
+                <property name="barCode" columnName="barcode" title="条码" type="String" length="20"/>
+            </properties>
+        </interface>
+        <interface name="Tree" title="树型结构">
+            <properties>
+                <property name="parent" title="上级" type="T" columnName="parent_id" />
+                <property name="level" title="级别" type="Integer" />
+                <property name="path" title="路径" type="String" length="255" />
+                <property name="isEnd" title="是否末级" type="Boolean" columnName="is_end" defaultValue="false" />
+            </properties>
+        </interface>
+    </component>
+    <!--base classes-->
+    <component name="entity" title="通用基类" moduleName="base">
+        <!--root entity-->
+        <class name="BizObject" title="基类">
+            <properties>
+                <property name="id" title="ID" type="Long" isKey="true"/>
+                <!--<property name="pubts" columnName="pubts" title="时间戳" type="DateTime" isSyncKey="true"/>-->
+            </properties>
+        </class>
+        <class name="Archive" title="档案基类">
+            <properties>
+                <property name="code" columnName="code" title="编码" type="String" length="20" isCode="true" isRequired="true" isUnique="true"/>
+                <property name="name" columnName="name" title="名称" type="String" length="20" isName="true" isGlobalization="true" isRequired="true"/>
+            </properties>
+        </class>
+        <class name="Vouch" title="单据基类">
+            <properties>
+                <property name="vouchDate" columnName="vouch_date" title="制单日期" type="Date" isRequired="true"/>
+            </properties>
+        </class>
+        <generalizations>
+            <generalization parent="BizObject" child="Archive" />
+            <generalization parent="BizObject" child="Vouch" />
+        </generalizations>
+        <realizations>
+            <realization supplier="base.itf.Audit" client="Archive" />
+            <realization supplier="base.itf.Audit" client="Vouch" />
+            <realization supplier="base.itf.AutoCode" client="Vouch" />
+        </realizations>
+    </component>
+    <!--user-->
+    <component name="user" moduleName="base" title="用户">
+        <class name="User" title="用户" tableName="user">
+            <properties>
+                <property name="username" title="用户名" type="String" length="50" isKey="true" />
+                <property name="password" title="密码" type="String" length="50" />
+                <property name="salt" title="盐" type="String" length="20" />
+                <property name="name" title="姓名" type="String" length="50" />
+                <property name="userType" title="用户类型" type="Integer" defaultValue="2" />
+                <property name="mobile" title="手机号" type="String" length="50" validate="phone" />
+                <property name="email" title="邮箱" type="String" length="255" validate="email" />
+                <property name="avatar" title="头像" type="String" length="255" />
+            </properties>
+        </class>
+    </component>
+</components>

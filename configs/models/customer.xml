@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components xmlns="http://www.imeta.org/meta"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.imeta.org/meta http://www.imeta.org/meta/meta.xsd">
+    <references>
+        <reference file="java.xml"/>
+        <reference file="base.xml"/>
+    </references>
+    <component name="customer" title="客户" moduleName="cbo" domain="customer">
+        <class name="Customer" title="客户" tableName="cbo_customer">
+            <properties>
+                <property name="mobile" title="手机" type="String" length="20" isRequired="true" validate="phone" />
+                <property name="card" title="会员卡" type="String" length="20" />
+                <property name="address" title="地址" type="String" length="200" />
+            </properties>
+        </class>
+        <generalizations>
+            <generalization parent="base.entity.Archive" child="Customer" />
+        </generalizations>
+    </component>
+</components>

@@ -1,0 +1,12 @@
+{
+  "fullname": "mall.order.Order",
+  "fields": [
+    {"name": "code"},
+    {"name": "totalMoney"}
+  ],
+  "conditions": [
+    {"name":"totalMoney","op":"between","v1":10,"v2":100},
+    {"name":"if status<5 then 1 elseif status=9 then 2 else 3 end","op":"in","v1":[1,2]}
+  ],
+  "pager":{"pageIndex":1,"pageSize":10}
+}

@@ -1,0 +1,8 @@
+{
+  "fullname": "base.user.User",
+  "fields": [
+    {"name": "username","alias":"CURRENT_USER"},{"name": "password"},{"name": "salt"},
+    {"name": "userType","alias":"USER_TYPE"},{"name": "name","alias":"CURRENT_USER_NAME"},{"name": "avatar"},
+    {"name": "mobile"},{"name": "email"}
+  ]
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components xmlns="http://www.imeta.org/meta"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.imeta.org/meta http://www.imeta.org/meta/meta.xsd">
+    <references>
+        <reference file="java.xml"/>
+        <reference file="base.xml"/>
+    </references>
+    <component name="goods" title="商品组件" moduleName="cbo" domain="goods">
+        <class name="GoodsCate" title="商品分类" tableName="cbo_goods_cate" service="cache:redis://1?key=goods-cate&amp;subKey=id&amp;type=json">
+            <properties>
+                <property name="parent" title="上级" type="GoodsCate" />
+            </properties>
+        </class>
+        <class name="Goods" title="商品" tableName="cbo_goods" service="cache:redis://1?key=goods&amp;subKey=id&amp;type=json">
+            <properties>
+                <property name="cate" columnName="cate_id" title="商品分类" type="GoodsCate" isRequired="true"/>
+                <property name="price" title="价格" type="Decimal" precision="12" scale="2"/>
+            </properties>
+        </class>
+        <class name="GoodsDescription" title="商品描述" tableName="cbo_goods_description">
+            <properties>
+                <property name="goods" columnName="goods_id" title="商品" type="Goods" isKey="true"/>
+                <property name="text" title="描述内容" type="Text" isGlobalization="true" />
+            </properties>
+        </class>
+        <class name="Sku" title="Sku" tableName="cbo_sku" service="cache:redis://1?key=sku&amp;subKey=id&amp;type=json">
+            <properties>
+                <property name="goods" columnName="goods_id" title="商品" type="Goods" isRequired="true"/>
+                <property name="price" title="价格" type="Decimal" precision="12" scale="2"/>
+                <property name="spec1" title="规格1" type="String" length="50" />
+                <property name="value1" title="规格值1" type="String" length="50" />
+                <property name="spec2" title="规格2" type="String" length="50" />
+                <property name="value2" title="规格值2" type="String" length="50" />
+                <property name="spec3" title="规格3" type="String" length="50" />
+                <property name="value3" title="规格值3" type="String" length="50" />
+            </properties>
+        </class>
+        <generalizations>
+            <generalization parent="base.entity.Archive" child="GoodsCate"/>
+            <generalization parent="base.entity.Archive" child="Goods"/>
+            <generalization parent="base.entity.Archive" child="Sku"/>
+        </generalizations>
+        <realizations>
+            <realization supplier="base.itf.Tree" client="GoodsCate"/>
+            <realization supplier="base.itf.BarCode" client="Goods"/>
+            <realization supplier="base.itf.BarCode" client="Sku"/>
+        </realizations>
+        <aggregations>
+            <aggregation type="composition" parentRole="goods" aggrParent="Goods" childRole="skues" aggrChild="Sku" childRoleMulti="ZeroToMany"/>
+            <aggregation type="composition" parentRole="goods" aggrParent="Goods" childRole="description" aggrChild="GoodsDescription" childRoleMulti="ZeroToOne"/>
+        </aggregations>
+    </component>
+</components>

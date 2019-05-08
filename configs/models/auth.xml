@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components xmlns="http://www.imeta.org/meta"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.imeta.org/meta http://www.imeta.org/meta/meta.xsd">
+    <references>
+        <reference file="java.xml"/>
+        <reference file="base.xml"/>
+    </references>
+    <component name="auth" title="权限组件" moduleName="base">
+        <class name="DataAuth" title="数据权限" tableName="base_data_auth">
+            <properties>
+                <property name="type" title="类型" type="String" length="20" isRequired="true" />
+                <property name="role" title="角色" type="String" length="20" isRequired="true" />
+                <property name="key" columnName="obj_id" title="业务主键" type="Long" isRequired="true" />
+            </properties>
+        </class>
+        <generalizations>
+            <generalization parent="base.entity.BizObject" child="DataAuth"/>
+        </generalizations>
+    </component>
+</components>

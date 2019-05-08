@@ -1,0 +1,12 @@
+{
+  "fullname": "mall.order.Order",
+  "fields": [
+    {"name": "id"},
+    {"name": "code"}
+  ],
+  "isConditionInnerJoin":true,
+  "conditions": [
+    {"name":"logistics.actions.user","op":"eq","v1":"张三"}
+  ],
+  "pager":{"pageIndex":1,"pageSize":10}
+}

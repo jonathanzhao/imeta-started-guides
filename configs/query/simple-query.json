@@ -1,0 +1,13 @@
+{
+  "fullname": "mall.order.Order",
+  "fields":[
+    {"name":"code"},{"name":"vouchDate"},{"name":"customer.name"}
+  ],
+  "conditions":[
+    {"name":"vouchDate","op":"between","v1":"current_date-1m/min_m","v2":"current_date/max"}
+  ],
+  "orders":[
+    {"name":"vouchDate","order":"desc"}
+  ],
+  "pager":{"pageIndex":1, "pageSize":2}
+}

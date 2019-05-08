@@ -1,0 +1,32 @@
+application:
+  authentication:
+    password-salt: ${password.salt}
+#  dubbo:
+#    app: 'kanban-service-provider'
+#    registry: 'zookeeper://${zk.host:localhost}:${zk.port:2181}'
+#    timeout: 3000
+#    port: ${service.port:22101}
+#    protocal: dubbo
+#  app-secret: APP-SECRET
+
+imeta:
+  tpl:
+    test:
+      integer:
+        from: 1
+        bound: 10000
+      date:
+        expression: 'time-3d/max'
+      decimal:
+        precision: 7
+        scale: 2
+      string:
+        strategy: short
+        length: 20
+      ranges:
+        cbo.goods.GoodsCate: 100..300,300..400
+        cbo.goods.Goods: 1000..2000,2000..3000,3000..4000
+        cbo.goods.Sku: 10000..40000
+        cbo.customer.Customer: 50000..60000
+        mall.order.OrderLogisticsAction.action: 捡货,验货,签收,分拣
+        mall.order.OrderLogisticsAction.user: 张三,李四,王五,赵六

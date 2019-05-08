@@ -1,0 +1,29 @@
+{
+  "fullname": "mall.order.Order",
+  "fields": [
+    {"name": "id"},
+    {"name": "code"}
+  ],
+  "isConditionInnerJoin": false,
+  "pager":{"pageIndex":1,"pageSize":2},
+  "compositions": [
+    {
+      "fullname":"mall.order.OrderLogistics",
+      "name": "logistics",
+      "fields":[
+        {"name":"shipTime"},
+        {"name":"actions.user"}
+      ],
+      "joins11": [
+        {"name":"actions","join":".user='张三'","joinType":"inner"}
+      ]
+    }
+  ],
+  "conditions": [
+    {"name":"logistics.actions.user","op":"eq","v1":"张三"}
+  ],
+  "joins111": [
+    {"name":"logistics","join":"","joinType":"inner"},
+    {"name":"logistics.actions","join":"","joinType":"inner"}
+  ]
+}

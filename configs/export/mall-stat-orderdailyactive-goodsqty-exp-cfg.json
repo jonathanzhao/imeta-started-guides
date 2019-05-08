@@ -1,0 +1,11 @@
+[
+  {
+    "entityName":"OrderDailyActive",
+    "columns":["name","totalOrderQty","totalOrderMoney","orderAvgMoney","totalGoodsQty"],
+    "captions":["商品分类","订单数","订单金额(万元)","客单价(万元)","商品数"],
+    "formatter":{"totalOrderMoney":{"format":"math","formula":"?/10000","scale":2},"orderAvgMoney":{"format":"formula","formula":"C?/B?"}},
+    "sheetTitle":"商品数",
+    "rowStart":"1",
+    "sampleRow":"1"
+  }
+]
