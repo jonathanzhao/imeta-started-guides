@@ -38,7 +38,7 @@ Boot-Stareter基于config>coding的开发模式，可以零JAVA代码快速构�
 5. 运行应用程序
 
 ### 配置元数据
-商城演示模型转换为元数据，将包转换为component，将类和属性转换为class和property，将继承、实现、组合关系转换为generalization、realization和aggregation，请查看[商城演示模型完整元数据](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/configs/mall-metadata.md)。
+商城演示模型转换为元数据，将包转换为component，将类和属性转换为class和property，将继承、实现、组合关系转换为generalization、realization和aggregation，请查看[商城演示模型完整元数据](https://github.com/jonathanzhao/imeta-started-guides/blob/master/configs/mall-metadata.md)。
 
 *注：可以通过调用api动态刷新运行期元数据缓存。*
 
@@ -98,7 +98,7 @@ Boot-Stareter基于config>coding的开发模式，可以零JAVA代码快速构�
 
 *注：可以通过调用api动态刷新运行期查询方案缓存。*
 
-了解更多查询方案内容[查询方案参考手册](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/query-reference.md)。
+了解更多查询方案内容 [查询参考手册](https://github.com/jonathanzhao/imeta-started-guides/blob/master/query-reference.md)。
 > 查询方案示例
 ```json
 {
@@ -120,7 +120,7 @@ Boot-Stareter基于config>coding的开发模式，可以零JAVA代码快速构�
 }
 ```
 ### 配置导入导出模版
-可以通过简单配置，实现Excel等导入导出功能。
+通过简单配置，实现Excel、csv等文档格式的导入导出功能，了解更多导入导出内容 [数据转换参考手册](https://github.com/jonathanzhao/imeta-started-guides/blob/master/dts-reference.md)。
 
 *注：可以通过调用api动态刷新运行期模版缓存。*
 > 导出模版配置示例
@@ -139,44 +139,45 @@ Boot-Stareter基于config>coding的开发模式，可以零JAVA代码快速构�
 ```
 > 导出母版示例
 
-![订单母版](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/tpl/f/mall-package.jpg)
+![订单母版](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/tpl/f/excel-tpl.jpg)
 > 导出结果示例
 
-![订单导出](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/tpl/f/mall-package.jpg)
+![订单导出](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/tpl/f/excel-result.jpg)
 
 ## 商城演示安装步骤
 1. 下载部署程序
-假设在路径/data/release下执行
-```bash
-git clone https://github.com/jonathanzhao/imeta-boot-starter-service.git mall
-```
+
+    假设在路径/data/release下执行
+    ```bash
+    git clone https://github.com/jonathanzhao/imeta-boot-starter-service.git mall
+    ```
 2. 导入演示数据库
-```bash
-cd /data/release/mall/data
-tar xzvf mall.sql.zip
-mysql --max_allowed_packet=16777216 --net_buffer_length=16384 -u'数据库用户名' -p'数据库密码' -h'数据库服务器地址' 数据库名 < mall.sql
-```
+    ```bash
+    cd /data/release/mall/data
+    tar xzvf mall.sql.zip
+    mysql --max_allowed_packet=16777216 --net_buffer_length=16384 -u'数据库用户名' -p'数据库密码' -h'数据库服务器地址' 数据库名 < mall.sql
+    ```
 3. 启动应用程序
-```bash
-cd /data/release/mall
-# extend/lib/*中为扩展jar包，登录等扩展功能在此jar包中。
-# service/lib/*中为boot-starter依赖jar包
-java -cp .:extend/lib/*:service/lib/*:service/* \
--Dfile.encoding=utf-8 \
--Dport=9001 \
--Dstatic.path=file:/data/release/mall/configs \
--Ddb.host=数据库服务器地址 \
--Ddb.port=数据库端口号 \
--Ddb.username=数据库用户名 \
--Ddb.pwd=数据库密码 \
--Ddb.database=数据库名称 \
--Dredis.pwd=Redis密码 \
--Dredis.db=Redis数据库编号 \
--Dauth.enabled=true \
--Dcors.enabled=true \
--Dapi.skip.check=true \
--Dauth.session.id=mallsessionid \
--Dapi.header.key=X-MALL-TOKEN \
-org.imeta.boot.starter.service.BootStarterServiceApplication \
-> mall.service.log &
-```
+    ```bash
+    cd /data/release/mall
+    # extend/lib/*中为扩展jar包，登录等扩展功能在此jar包中。
+    # service/lib/*中为boot-starter依赖jar包
+    java -cp .:extend/lib/*:service/lib/*:service/* \
+    -Dfile.encoding=utf-8 \
+    -Dport=9001 \
+    -Dstatic.path=file:/data/release/mall/configs \
+    -Ddb.host=数据库服务器地址 \
+    -Ddb.port=数据库端口号 \
+    -Ddb.username=数据库用户名 \
+    -Ddb.pwd=数据库密码 \
+    -Ddb.database=数据库名称 \
+    -Dredis.pwd=Redis密码 \
+    -Dredis.db=Redis数据库编号 \
+    -Dauth.enabled=true \
+    -Dcors.enabled=true \
+    -Dapi.skip.check=true \
+    -Dauth.session.id=mallsessionid \
+    -Dapi.header.key=X-MALL-TOKEN \
+    org.imeta.boot.starter.service.BootStarterServiceApplication \
+    > mall.service.log &
+    ```
