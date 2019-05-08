@@ -74,7 +74,7 @@ BROWN, PLUM, INDIGO, GREY_80_PERCENT, AUTOMATIC
 ```json
 [
   {
-    "entityName":"Order",
+    "entityName":"mall.order.Order",
     "columns":["code","customer_name","totalMoney","status","vouchDate"],
     "captions":["编码","买家名称","买家手机号","订单金额","状态","下单日期"],
     "formatter":{"status":{"format":"enum","items":{"0":"N/A","1":"待支付","2":"已付款，待确认","3":"已付款","4":"配货中","5":"配货完成，待发货","6":"已发货","7":"已收货","8":"已完成","9":"已取消","10":"货到付款"},"styles":[{"trigger":{"op":"eq","v1":1},"style":{"color":"ORANGE"}},{"trigger":{"op":"eq","v1":9},"style":{"color":"RED","bold":true}},{"trigger":{"op":"egt","v1":7},"style":{"color":"GREEN"}}]},"vouchDate":{"format":"date"}},
@@ -92,5 +92,64 @@ BROWN, PLUM, INDIGO, GREY_80_PERCENT, AUTOMATIC
 
 ## 导入
 ### 导入数据配置
+设置columns数组，里面每一项对应导入数据的字段名称，顺序要一一对应，字段名称中如果有点号(.)或者$符号，则解析为0..1关系的组合实体，例如：商品和商品描述信息。
+```json
+"columns":"cate_code,cate_name,code,name_alias,price,barCode,description.text"
+```
 ### 关联实体处理
-### 组合实体处理
+如果导入数据中没有关联实体的键值，则需要设置mapping进行映射。例如：导入商品时，数据中没有商品分类的主键数据，但有商品分类编码和名称，则可以通过cate_code找到商品分类的主键。
+> 映射格式
+
+||含义|说明|
+|---|---|---|
+|键|数据字段名称|导入数据中商品分类编码cate_code|
+|值|元数据属性映射|属性映射|
+
+> 属性映射
+
+||含义|说明|
+|---|---|---|
+|sourceProperty|数据对应的属性|数据字段cate_code对应的商品分类编码属性code<br/>targetProperty类型为简单类型时，sourceProperty为空|
+|targetProperty|目标属性|商品中的商品分类属性cate|
+|items|枚举映射|枚举显示值与实际值映射，当元数据中为枚举类型时，无需设置此项，根据元数据枚举即可推断对应的值|
+
+> 枚举映射
+||含义|说明|
+|---|---|---|
+|键|枚举显示值||
+|值|枚举实际值||
+
+> 映射示例
+
+```json
+"mapping":{
+    "cate_code":{"sourceProperty":"code", "targetProperty":"cate"}
+}
+```
+
+> 映射过程
+
+1. 将所有数据中的cate_code去重。
+2. 通过当前实体(商品实体)和targetProperty，找到其类型，即商品分类实体。
+3. 通过商品分类实体和sourceProperty，结合去重后的cate_code集合，查找出所有的商品分类主键和编码集合。
+4. 根据编码找到每行数据的商品分类主键，将键值设置到cate属性上。
+
+*注1：操作需要批量处理*
+
+*注2：映射字段需要是唯一的，否则无法确定主键*
+
+### 导入模版示例
+```json
+[
+  {
+    "entityName":"cbo.goods.Goods",
+    "columns":"cate_code,cate_name,code,name_cn,price,barCode,description.text",
+    "sheetTitle":"商品",
+    "rowStart":"1",
+    "mapping":{
+      "cate_code":{"sourceProperty":"code", "targetProperty":"cate"},
+      "name_alias":{"targetProperty":"name"}
+    }
+  }
+]
+```
