@@ -93,7 +93,7 @@ new BufferedReader(new InputStreamReader(inputStream)).lines().filter(line -> li
 - 关键角色
   - Reactor<br/>
   它是该模式最终向用户提供接口的类。用户可以向Reactor中注册EventHandler，然后Reactor在“反应(react)”的时候，发现用户注册的fd上有事件发生，就会回调用户的事件处理函数。
-  - Eventhandler<br/>
+  - EventHandler<br/>
   用户定义的事件处理程序，在特定事件发生的时候做些什么。
   - SynchronousEventDemultiplexer<br/>
   它是Reactor用来检测用户注册的fd上发生的事件的利器，通过Reactor得知哪些fd上发什么了什么样的事件，然后以些来多路分发事件，回调用户的事件处理程序。
