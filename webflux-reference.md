@@ -21,7 +21,7 @@
 
 ![Spring MVC vs WebFlux](/images/webflux/test/rt.png)
 
-随着压力进一步增大，mvc-with-latency的测试出现了许多的请求fail而以失败告终； 而WebFlux-with-latency应对20000用户已然面不改色心不慌，吞吐量达到7228 req/sec，95%响应时长仅117ms。
+随着压力进一步增大，mvc-with-latency的测试出现了许多的请求fail而以失败告终； 而WebFlux-with-latency应对20000用户依然稳健，吞吐量达到7228 req/sec，95%响应时长仅117ms。
 
 ## WebFlux 适用范围
 - 中转调度，不做具体工作的
@@ -90,8 +90,13 @@ new BufferedReader(new InputStreamReader(inputStream)).lines().filter(line -> li
   2. 事件发生
   3. 事件分发器调用之前注册的函数
   4. 在回调函数中读取数据，对数据进行后续处理
-- 关键角色<br/>
-  Reactor、Handle、Event Demultiplexer、Event handler
+- 关键角色
+  - Reactor<br/>
+  它是该模式最终向用户提供接口的类。用户可以向Reactor中注册EventHandler，然后Reactor在“反应(react)”的时候，发现用户注册的fd上有事件发生，就会回调用户的事件处理函数。
+  - Eventhandler<br/>
+  用户定义的事件处理程序，在特定事件发生的时候做些什么。
+  - SynchronousEventDemultiplexer<br/>
+  它是Reactor用来检测用户注册的fd上发生的事件的利器，通过Reactor得知哪些fd上发什么了什么样的事件，然后以些来多路分发事件，回调用户的事件处理程序。
 - 单线程模型<br/>
   ![单线程模型](/images/webflux/reactor/single-model.png)
 - 多线程模型<br/>
