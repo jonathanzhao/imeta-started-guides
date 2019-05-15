@@ -1,6 +1,9 @@
 # iMeta Framework参考手册
 ## 介绍
 iMeta是一个基于JAVA语言开发的模型驱动（MDD）开发框架，以元数据为基础，与微服务架构（Micro-Services）天然融合，配置文件为主要开发方式，适用于以关系数据库和No-Sql数据库为数据存储介质、以数据查询、持久化为主要操作方式、面向微服务的、部署在云（Cloud）中的应用程序。
+
+*注：本文档基于V2.0编写，部分内容与V1.0不同。*
+
 ## 特点
 1. MDD：以用户模型（参考“OMG四层元模型架构”中M1层）为基础的开发框架，使用元数据描述用户模型，元数据结构借鉴OMG M2层静态元素结构，开发时以元数据为基础、以配置文件为主要开发方式。
 2. Zero Coding：零JAVA代码，主要开发方式是书写配置文件，包括：用户模型、数据查询、导出导出等。
@@ -158,13 +161,19 @@ iMeta中域在组件（Component）上声明，组件为最小的部署单元。
 | 枚举类型 | Enumeration | OrderStatus |
 | 实体 | Entity | Order,OderDetail,Goods |
 | 接口 | Interface | Code,Autditable |
-| 组合关系 | Association | Order -> OrderDetail |
-| 关联关系 | Association | OrderDetail -> Goods |
+| 组合关系 | Aggregation(V2)/Association(V1) type="composition" | Order -> OrderDetail |
+| 关联关系 | 通过类型推断 | OrderDetail -> Goods |
 | 继承关系 | Generalization| Goods -> Archive |
 |实现关系|Realization| OrderBase -> Auditable |
 |属性|Property|code,details,createTime|
 |方法|Operation||
 |方法参数|Parameter||
+
+> 说明
+
+- 关联关系推断：属性的数据类型为复杂类型时，属性所属类型与属性数据类型间为关联关系。
+- 组合关系是一种关系强烈的关联关系。
+- V2中使用Aggregation不使用Composition的原因是：1. Composition的缩写容易与Component混淆； 2. Aggregation取自聚合根的含义，而非UML中的聚合关系。
 
 ### 查询方案
 ![查询方案](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-schema.png "QuerySchema")
