@@ -71,7 +71,7 @@ iMeta提供了集成WebFlux的能力，可以方便的开发涉及任务调度�
 - 配置大于开发，约定大于配置<br/>
     一切以**零**代码为目标，提供BOOT-STARTER一站式零JAVA代码服务组件。
 - 多种扩展机制<br/>
-  - 框架层提供*MetaBean、*MetaAware等接口，自动注入具体实现类。
+  - 框架层提供\*MetaBean、\*MetaAware等接口，自动注入具体实现类。
   - 核心接口均有默认实现类，通过设置优先级，特定实现类可以替换默认实现类。
   - 提供拦截器机制，可以在核心方法前后进行处理。
   - 提供事件机制，重要环节会触发事件，通知Listener处理。
@@ -95,15 +95,15 @@ iMeta提供了集成WebFlux的能力，可以方便的开发涉及任务调度�
 
 ## 核心组件
 - 元数据Metadata：Component、Interface、Entity、Property、DataType、Enumeration
-- 接口：*MetaBean、*MetaAware，用于默认实现和扩展开发
-- 事件通知：*Listener、*Event，用于扩展开发
-- 仓库：*Registry
-- 帮助类：*Walker、KeyIterator、Objectlizer
-- CRUD：*SqlBuilder、*Service、QuerySchema
+- 接口：\*MetaBean、\*MetaAware，用于默认实现和扩展开发
+- 事件通知：\*Listener、\*Event，用于扩展开发
+- 仓库：\*Registry
+- 帮助类：\*Walker、KeyIterator、Objectlizer
+- CRUD：\*SqlBuilder、\*Service、QuerySchema
 - 入口：MetaBeanFactory、TplBeanFactory
-- 代码生成：*Builder、*Func
-- 自动配置：*AutoConfig
-- 解析器：*Parser、*Node、*Tree
+- 代码生成：\*Builder、\*Func
+- 自动配置：\*AutoConfig
+- 解析器：\*Parser、\*Node、\*Tree
 
 ## 核心概念
 ### 用户模型 UserModel
@@ -151,6 +151,24 @@ iMeta中域在组件（Component）上声明，组件为最小的部署单元。
 | 不隔离 | 本地服务/缓存服务 | 本地服务/缓存服务 |
 | 单实例 | 本地服务（跨库）/缓存服务 | 本地服务（跨库）/缓存服务 |
 | 服务隔离 | 本地服务/缓存服务 | 远程服务 |
+
+隔离级别通过\*Profile来确定，可以自定义MetaProfile。远程服务隔离级别设置在Property上，缓存服务隔离级别设置在Classifer上，本地服务隔离级别不用设置，但可能修改数据库表名。
+
+对于远程服务和缓存服务隔离级别，需要在Classifier的service中设置访问方式，以供相应驱动使用。在Classifer的service属性中，可以指定明确的访问方式。
+```shell
+#服务协议格式
+协议:驱动://服务器信息/数据源?参数列表
+# 远程服务协议
+service="remote:dubbo://<username>:<password>@<server>:<port>/<registry>?group=mall&interface=xxx.xxx&check=false&…"
+service="remote:dubbo://?group=mall&interface=xxx.xxx&check=false&…"
+service="remote:eureka://?application=xxx&…"
+# 缓存服务协议
+service="cache:redis://<username>:<password>@<server>:<port>/<database>?key=cbo.goods.Goods&subkey=id&type=hash&…"
+service="cache:redis://1?key=cbo.goods.Goods&subkey=id&type=hash&…"
+service="cache:es://<url>?p1=v1&…"
+service="cache:mongo://<url>?p1=v1&…"
+```
+服务协议很多项不用设置，使用上下文中环境变量即可。如果什么都不设置，使用默认处理程序。缓存服务最好明确配置协议和驱动及关键参数。
 
 ### 用户模型与元数据的映射
 |用户模型|元数据模型|示例|
