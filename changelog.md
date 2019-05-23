@@ -19,8 +19,9 @@
   - 增加元数据加载扩展机制。
 - 模版
   - 支持多种数据源，增加数据源TplDataSource<M>抽象类和数据访问接口ValueHandler<M>，可以访问不同类型的数据源。
+  - 支持测试用例数据生成，更加精细控制数据格式与范围。
 - 全面服务化
-  - 定义服务接口Service、查询接口QueryService等，规范服务行为。
+  - 定义服务接口Service、查询接口QueryService（CacheService、RemoteService、LocalService）和持久化接口PersistenceService，规范服务行为。
   - 增加服务定位接口ServiceLocator。
   - 增加服务协议定义ServiceProtocol。
   - 提供统一查询引擎和统一持久化引擎。
