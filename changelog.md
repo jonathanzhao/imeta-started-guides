@@ -1,0 +1,36 @@
+# iMeta Framework 变更清单
+
+## v2.0
+- 移除所有与ThreadLocal相关的内容
+  - 移除ThreadLocalAware接口，不再统一管理ThreadLocal相关资源，为反应式编程扫清障碍。
+  - 移除DynamicTypeRepository，运行期不再临时修改Property的type。
+  - 移除MetaBeanFactory中清理ThreadLocal资源的方法。
+- 增加元数据定义
+  - 元数据定义与元数据分离，有利于元数据再运行期加载、追加、移除。
+  - 元数据加载增加扩展机制。
+- 元数据调整
+  - 增加M2AttributeRegistry接口规范元数据结构，元数据不再支持自由扩展。
+  - 元数据不再是弱类型结构，变更为强类型结构，结构与M2AttributeRegistry中定义保持一致。
+  - 元数据中布尔类型为基本类型boolean，无需空判断。
+  - 增加M2DataType规范元数据M2层属性类型，增加M1DataType规范M1属性类型。
+  - 规范了继承、实现验证，与Java继承、实现规则保持一致。
+  - 组合关系中分别使用aggrParent、aggrChild、parentRole、childRole替换V1中typeB、typeA、roleB、roleA
+  - 支持为枚举Enumeration类型设置M1类型(M1DataType)，枚举基本类型可以为Short、String等。
+  - 增加元数据加载扩展机制。
+- 模版数据源
+  - 增加数据源TplDataSource<M>抽象类和数据访问接口ValueHandler<M>，可以访问不同类型的数据源。
+- 全面服务化
+  - 定义服务接口Service、查询接口QueryService等，规范服务行为。
+  - 增加服务定位接口ServiceLocator。
+  - 增加服务协议定义ServiceProtocol。
+  - 提供统一查询引擎和统一持久化引擎。
+  - 增加扩展机制：拦截器、事件、消息
+- 与Spring集成
+  - Spring集成组件支持自动配置，全面支持SpringBoot。
+  - 支持加载外部扩展及排除默认实现。
+  - 拆分细化support组件，拆分出json、mail、jdbc、redis、schedule、tpl、web等支持组件，更加方便集成新的组件。
+- 增加Boot-Starter组件
+  - 基于配置快速应用开发，零代码创建应用。
+- 增加WebFlux支持
+  - 支持反应式编程
+  - 支持异步高并发WebFlux应用程序开发
