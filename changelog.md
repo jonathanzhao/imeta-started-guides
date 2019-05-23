@@ -17,8 +17,8 @@
   - 组合关系中分别使用aggrParent、aggrChild、parentRole、childRole替换V1中typeB、typeA、roleB、roleA
   - 支持为枚举Enumeration类型设置M1类型(M1DataType)，枚举基本类型可以为Short、String等。
   - 增加元数据加载扩展机制。
-- 模版数据源
-  - 增加数据源TplDataSource<M>抽象类和数据访问接口ValueHandler<M>，可以访问不同类型的数据源。
+- 模版
+  - 支持多种数据源，增加数据源TplDataSource<M>抽象类和数据访问接口ValueHandler<M>，可以访问不同类型的数据源。
 - 全面服务化
   - 定义服务接口Service、查询接口QueryService等，规范服务行为。
   - 增加服务定位接口ServiceLocator。
