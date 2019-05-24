@@ -179,6 +179,18 @@
       }
     }
     ```
+    - merge
+    ```json
+    // Order details
+    // 注意，仅合并第一行
+    {
+      "id": 1197121333285120,
+      "code": "DT201805011",
+      "details_goods": 1602,
+      "details_price": 338.26,
+      "details_order": 1197121333285120
+    }
+    ```
   - 精确路由策略与名称推断路由策略
     - 精确路由策略<br/>
       *rel不为空，fullname或者name有值，使用精确路径。*
