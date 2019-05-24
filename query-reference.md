@@ -65,8 +65,9 @@
     ```
   - 查询数据形态：查询实体的数据条数一般小于最终数据条数，产生的笛卡尔积中，查询实体的数据会重复
 - 组合查询
-  - 查询一个实体即相关实体（可以没有直接的实体关系）的数据，例如：查询订单Order和子实体OrderDetail
+  - 查询其它实体的数据，该实体可以与查询实体没有直接的实体关系。
   - 查询方案形如：
+    查询订单Order和子实体OrderDetail
     ```json
     {
         "fields": [
@@ -82,7 +83,7 @@
         ]
     }
     ```
-    又如：Order和Customer
+    查询订单和客户Order和Customer
     ```json
     {
         "fields": [
@@ -91,7 +92,7 @@
         "compositions":[
             {
                 "name": "customer",
-                "filter": "first",
+                "directives": "merge",
                 "fields": [
                     {"name":"code"},{"name":"name"}
                 ]
@@ -99,7 +100,58 @@
         ]
     }
     ```
-  - 查询数据形态：查询实体的数据条数等于最终数据条数，相关实体数据以挂载在父数据下面。
+  - 查询数据形态：查询实体的数据条数为最终数据条数；相关实体数据默认以对象的形式挂载在父数据下面，通过设置directives指令改变数据形态，例如：merge，则子对象数据会合并到父对象中。
+  - 精确路由策略与名称推断路由策略
+    - 精确路由策略<br/>
+      *rel不为空，fullname或者name有值，使用精确路径。*
+
+      |类型|来源实体|rel|来源属性|来源字段|目标实体|目标字段|集合|别名|
+      |---| ---  | --- | ---  | ---   | ---   | ---  |---|---|
+      |asso|Order|id=customer|customer|customer|Customer|id|false|customer|
+      |comp|Order|order=id|id|id|OrderDetail|order|true|details|
+      |compb|OrderDetail|id=order|order|order|Order|id|false|order|
+      |dep|Goods|goods=id|id|id|OrderDetail|goods|true|mallgoodsOrderDetail|
+      |asso-asso|OrderDetail|cbocateGoods.id=goods|goods|goods|GoodsCate|cbocateGoods_id|false|goods_cate|
+      |comp-comp|Order|logistics.order=id|id|id|OrderLogisticsAction|logistics_order|true|logistics_actions|
+      |dep-dep|GoodsCate|goods.cate=id|id|id|OrderDetail|goods_cate|true|cbocateGoods_mallgoodsOrderDetail|
+      |asso-comp|OrderDetail|goods=goods|goods|goods|Sku|goods|true|goods_skues|
+      |asso-dep|OrderDetail|cate=goodsCate|goodsCate|goodsCate|Goods|cate|true|goodsCate_cbocateGoods|
+      |comp-asso|Order|mallgoodsOrderDetail.order=id|id|id|Goods|mallgoodsOrderDetail_order|true|details_goods|
+      |comp-dep|Goods|sku.goods=id|id|id|OrderDetail|sku_goods|true|skues_mallskuOrderDetail|
+      |dep-asso|GoodsCate|mallgoodsOrderDetail.goodsCate=id|id|id|Goods|mallgoodsOrderDetail_goodsCate|true|mallgoodsCateOrderDetail_goods|
+      |dep-comp|GoodsCate|goods.cate=id|id|id|Sku|goods_cate|true|cbocateGoods_skues|
+      |comp-asso-comp|Order|goods.mallgoodsOrderDetail.order=id|id|id|Sku|goods_mallgoodsOrderDetail_order|true|details_goods_skues|
+      |dep-comp-dep|GoodsCate|sku.goods.cate=id|id|id|OrderDetail|sku_goods_cate|true|cbocateGoods_skues_mallskuOrderDetail|
+      |asso-dep-comp|OrderDetail|goods.cate=goodsCate|goodsCate|goodsCate|Sku|goods_cate|true|goodsCate_cbocateGoods_skues|
+      |comp-dep-compb|Goods|details.sku.goods=id|id|id|Order|details_sku_goods|true|skues_mallskuOrderDetail_order|
+      |compb-compb-comp|OrderLogisticsAction|order.logistics.id=logistics|logistics|logistics|OrderDetail|order_logistics_id|true|logistics_order_details|
+      |compb-compb-comp-asso-dep-com|OrderLogisticsAction|goods.cate.mallgoodsCateOrderDetail.order.logistics.id=logistics|logistics|logistics|Sku|goods_cate_mallgoodsCateOrderDetail_order_logistics_id|true|logistics_order_details_goodsCate_cbocateGoods_skues|
+
+    - 名称推断路由策略<br/>
+      *rel为空，name有值，使用名称推断。*
+
+      |类型|来源实体|name|来源属性|来源字段|目标实体|目标字段|集合|
+      |---| ---  | --- | ---  | ---   | ---   | ---  |---|
+      |asso|Order|customer|customer|customer|Customer|id |false|
+      |comp|Order|details|details|id|OrderDetail|order |true|
+      |compb|OrderDetail|order|order|order|Order|id |false|
+      |dep|Goods|mallgoodsOrderDetail|mallgoodsOrderDetail|id|OrderDetail|goods |true|
+      |asso-asso|OrderDetail|goods.cate|goods|goods|GoodsCate|cbocateGoods_id |false|
+      |comp-comp|Order|logistics.actions|logistics|id|OrderLogisticsAction|logistics_order |true|
+      |dep-dep|GoodsCate|cbocateGoods.mallgoodsOrderDetail|cbocateGoods|id|OrderDetail|goods_cate |true|
+      |asso-comp|OrderDetail|goods.skues|goods|goods|Sku|goods |true|
+      |asso-dep|OrderDetail|goodsCate.cbocateGoods|goodsCate|goodsCate|Goods|cate |true|
+      |comp-asso|Order|details.goods|details|id|Goods|mallgoodsOrderDetail_order |true|
+      |comp-dep|Goods|skues.mallskuOrderDetail|skues|id|OrderDetail|sku_goods |true|
+      |dep-asso|GoodsCate|mallgoodsCateOrderDetail.goods|mallgoodsCateOrderDetail|id|Goods|mallgoodsOrderDetail_goodsCate |true|
+      |dep-comp|GoodsCate|cbocateGoods.skues|cbocateGoods|id|Sku|goods_cate |true|
+      |comp-asso-comp|Order|details.goods.skues|details|id|Sku|goods_mallgoodsOrderDetail_order |true|
+      |dep-comp-dep|GoodsCate|cbocateGoods.skues.mallskuOrderDetail|cbocateGoods|id|OrderDetail|sku_goods_cate |true|
+      |asso-dep-comp|OrderDetail|goodsCate.cbocateGoods.skues|goodsCate|goodsCate|Sku|goods_cate |true|
+      |comp-dep-compb|Goods|skues.mallskuOrderDetail.order|skues|id|Order|details_sku_goods |true|
+      |compb-compb-comp|OrderLogisticsAction|logistics.order.details|logistics|logistics|OrderDetail|order_logistics_id |true|
+      |compb-compb-comp-asso-dep-com|OrderLogisticsAction|logistics.order.details.goodsCate.cbocateGoods.skues|logistics|logistics|Sku|goods_cate_mallgoodsCateOrderDetail_order_logistics_id |true|
+
 - 子查询
   - 查询一个实体，条件来源于其它查询方案，例如：订单明细OrderDetail的商品来自数据权限范围的商品
   - 查询方案形如：
