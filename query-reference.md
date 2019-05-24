@@ -101,6 +101,84 @@
     }
     ```
   - 查询数据形态：查询实体的数据条数为最终数据条数；相关实体数据默认以对象的形式挂载在父数据下面，通过设置directives指令改变数据形态，例如：merge，则子对象数据会合并到父对象中。
+    - default
+    ```json
+    // Order customer
+    {
+      "code": "DT201805011",
+      "customer": {
+        "code": "53568",
+        "name": "买家53568",
+        "id": 53568
+      }
+    }
+    ```
+    - merge
+    ```json
+    // Order customer
+    {
+      "code": "DT201805011",
+      "customer": 53568,
+      "customer_code": "53568",
+      "customer_name": "买家53568",
+      "customer_id": 53568
+    }
+    ```
+    - list
+    ```json
+    // Order customer
+    {
+      "code": "DT201805011",
+      "customer": [{
+        "code": "53568",
+        "name": "买家53568",
+        "id": 53568
+      }]
+    }
+    ```
+    - topN
+    ```json
+    // Order details
+    {
+      "id": 1197121333285120,
+      "code": "DT201805011",
+      "details": [{
+        "goods": 1602,
+        "price": 338.26,
+        "order": 1197121333285120
+      }, {
+        "goods": 3229,
+        "price": 681.74,
+        "order": 1197121333285120
+      }]
+    }
+    ```
+    - first
+    ```json
+    // Order details
+    {
+      "id": 1197121333285120,
+      "code": "DT201805011",
+      "details": {
+        "goods": 1602,
+        "price": 338.26,
+        "order": 1197121333285120
+      }
+    }
+    ```
+    - last
+    ```json
+    // Order details
+    {
+      "id": 1197121333285120,
+      "code": "DT201805011",
+      "details": {
+        "goods": 3229,
+        "price": 681.74,
+        "order": 1197121333285120
+      }
+    }
+    ```
   - 精确路由策略与名称推断路由策略
     - 精确路由策略<br/>
       *rel不为空，fullname或者name有值，使用精确路径。*
