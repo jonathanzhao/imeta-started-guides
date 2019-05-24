@@ -195,12 +195,16 @@
     - 精确路由策略<br/>
       *rel不为空，fullname或者name有值，使用精确路径。*
 
+      > 一级路径示例
+
       |类型|来源实体|rel|来源属性|来源字段|目标实体|目标字段|集合|别名|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|---|
       |asso|Order|id=customer|customer|customer|Customer|id|false|customer|
       |comp|Order|order=id|id|id|OrderDetail|order|true|details|
       |compb|OrderDetail|id=order|order|order|Order|id|false|order|
       |dep|Goods|goods=id|id|id|OrderDetail|goods|true|mallgoodsOrderDetail|
+
+      > 二级路径示例
 
       |类型|来源实体|rel|来源属性|来源字段|目标实体|目标字段|集合|别名|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|---|
@@ -214,6 +218,8 @@
       |dep-asso|GoodsCate|mallgoodsOrderDetail.goodsCate=id|id|id|Goods|mallgoodsOrderDetail_goodsCate|true|mallgoodsCateOrderDetail_goods|
       |dep-comp|GoodsCate|goods.cate=id|id|id|Sku|goods_cate|true|cbocateGoods_skues|
 
+      > 三级路径示例
+
       |类型|来源实体|rel|来源属性|来源字段|目标实体|目标字段|集合|别名|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|---|
       |comp-asso-comp|Order|goods.mallgoodsOrderDetail.order=id|id|id|Sku|goods_mallgoodsOrderDetail_order|true|details_goods_skues|
@@ -222,6 +228,8 @@
       |comp-dep-compb|Goods|details.sku.goods=id|id|id|Order|details_sku_goods|true|skues_mallskuOrderDetail_order|
       |compb-compb-comp|OrderLogisticsAction|order.logistics.id=logistics|logistics|logistics|OrderDetail|order_logistics_id|true|logistics_order_details|
 
+      > 多级路径示例
+
       |类型|来源实体|rel|来源属性|来源字段|目标实体|目标字段|集合|别名|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|---|
       |compb-compb-comp-asso-dep-com|OrderLogisticsAction|goods.cate.mallgoodsCateOrderDetail.order.logistics.id=logistics|logistics|logistics|Sku|goods_cate_mallgoodsCateOrderDetail_order_logistics_id|true|logistics_order_details_goodsCate_cbocateGoods_skues|
@@ -229,12 +237,16 @@
     - 名称推断路由策略<br/>
       *rel为空，name有值，使用名称推断。*
 
+      > 一级路径示例
+
       |类型|来源实体|name|来源属性|来源字段|目标实体|目标字段|集合|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|
       |asso|Order|customer|customer|customer|Customer|id |false|
       |comp|Order|details|details|id|OrderDetail|order |true|
       |compb|OrderDetail|order|order|order|Order|id |false|
       |dep|Goods|mallgoodsOrderDetail|mallgoodsOrderDetail|id|OrderDetail|goods |true|
+
+      > 二级路径示例
 
       |类型|来源实体|name|来源属性|来源字段|目标实体|目标字段|集合|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|
@@ -248,6 +260,8 @@
       |dep-asso|GoodsCate|mallgoodsCateOrderDetail.goods|mallgoodsCateOrderDetail|id|Goods|mallgoodsOrderDetail_goodsCate |true|
       |dep-comp|GoodsCate|cbocateGoods.skues|cbocateGoods|id|Sku|goods_cate |true|
 
+      > 三级路径示例
+
       |类型|来源实体|name|来源属性|来源字段|目标实体|目标字段|集合|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|
       |comp-asso-comp|Order|details.goods.skues|details|id|Sku|goods_mallgoodsOrderDetail_order |true|
@@ -256,6 +270,8 @@
       |comp-dep-compb|Goods|skues.mallskuOrderDetail.order|skues|id|Order|details_sku_goods |true|
       |compb-compb-comp|OrderLogisticsAction|logistics.order.details|logistics|logistics|OrderDetail|order_logistics_id |true|
 
+      > 多级路径示例
+      
       |类型|来源实体|name|来源属性|来源字段|目标实体|目标字段|集合|
       |---| ---  | --- | ---  | ---   | ---   | ---  |---|
       |compb-compb-comp-asso-dep-com|OrderLogisticsAction|logistics.order.details.goodsCate.cbocateGoods.skues|logistics|logistics|Sku|goods_cate_mallgoodsCateOrderDetail_order_logistics_id |true|
