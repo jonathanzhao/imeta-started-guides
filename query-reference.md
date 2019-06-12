@@ -1,7 +1,11 @@
 # iMeta Framework 查询参考手册
 ## 概述
 跨服务统一查询是iMeta的一个核心功能，通过查询方案结合元数据，可以实现常见的数据跨查询、缓存查询、远程服务调用查询，通过配置即可完成代码开发工作。<br/>
-统一查询服务还可以为数据导出等功能提供数据查询支持，也是通过配置完成。<br/>
+通过统一的查询API，提供微服务架构下多服务协同查询，下图为电子商城订单查询示例。<br/>
+![电子商城订单查询](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-instance.png "Mall Order Query")
+
+想要了解统一查询工作原理，请查看 [统一查询服务实现原理](query-implements.md)。
+
 本文档将以查询方案为核心，介绍如何根据用户模型来配置查询方案，给出了常见应用场景下的配置方式。
 
 ## 用户模型参考
