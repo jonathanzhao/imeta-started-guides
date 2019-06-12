@@ -169,15 +169,15 @@ limit 0,2
 
 ```json
 {
-	"totalCount": 59495,
+	"totalCount": 57517,
 	"data": [{
-		"code": "DT201903111",
-		"status": 3,
-		"details_qty": 1503.00
+		"code": "DT201903121",
+		"status": "后续流程",
+		"details_qty": 97.00
 	}, {
-		"code": "DT201903111",
-		"status": 3,
-		"details_qty": 87.00
+		"code": "DT201903121",
+		"status": "后续流程",
+		"details_qty": 4632.00
 	}]
 }
 ```
