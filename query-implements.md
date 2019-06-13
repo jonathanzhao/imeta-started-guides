@@ -100,7 +100,7 @@ isolationLevel˚isolationLevelisolationLevelisolationLevel
 首先进行查询方案解析，解析后形成查询树和物理树，查询树与查询方案间有直接映射关系，物理树用于查询层次结构。<br/>
 查询树结构
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -131,7 +131,7 @@ QueryNode	: <Order>   [------] [L]
 
 物理树结构
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -208,7 +208,7 @@ limit 0,2
 首先进行查询方案解析，解析后形成查询树和物理树，查询树与查询方案间有直接映射关系，物理树用于查询层次结构。<br/>
 查询树结构
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -222,7 +222,7 @@ QueryNode	: <Order>   [------] [L]
 
 物理树结构
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -308,7 +308,7 @@ limit 0,10
 
 解析后的查询树
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -380,7 +380,7 @@ where T0.id in (?,?)
 
 查询树
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -430,7 +430,7 @@ limit 0,2
 
 Redis缓存查询
 
-```bash
+```shell
 hmget customer 54785 51912
 ```
 
@@ -468,7 +468,7 @@ where T0.id in (54785,51912)
 
 将查询数据补充到缓存中
 
-```bash
+```shell
 hmset customer 54785 '{"mobile":"18910774786","card":"金卡","code":"54785","name":"买家54785","id":"54785","tenant":1001}' 51912 '{"mobile":"18910771913","card":"金卡","code":"51912","name":"买家51912","id":"51912","tenant":1001}'
 ```
 
@@ -521,7 +521,7 @@ hmset customer 54785 '{"mobile":"18910774786","card":"金卡","code":"54785","na
 
 查询树
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
@@ -586,7 +586,7 @@ limit 0,2
 
 查询树
 
-```bash
+```shell
 # 格式：<类型> 名称 别名 [SJWGHO] [L/C/R]
 # SJWGHO 分别为 Select Join Where Group Having Order
 # L/C/R 分别为 Local/Cache/Remote
