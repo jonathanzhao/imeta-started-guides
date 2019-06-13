@@ -238,14 +238,13 @@ QueryNode	: <Order>   [------] [L]
 
 跨域关联查询需要拆分查询方案，拆分后的主查询方案
 
-```json
+```js
 {
   "fullname": "mall.order.Order",
   "fields": [
     {"name": "code"},
     {"name": "status"},
-    // 补充缺少的customer字段，后续通过该字段生成远程查询方案的条件，并通过它合并主数据与远程数据
-    {"name": "customer"}
+    {"name": "customer"} // 补充缺少的customer字段，后续通过该字段生成远程查询方案的条件，并通过它合并主数据与远程数据
   ],
   "conditions": [
     {"name": "vouchDate", "op": "between", "v1": "current_date-3m/min", "v2": "current_date/max"}
