@@ -1,7 +1,10 @@
 # iMeta Framework 统一查询服务实现原理
 ## 概述
 在微服务（micro-services）架构下，针对不同数据源查询提供统一的查询接口、对开发人员透明化查询细节是iMeta框架的一个核心功能。<br/>
-通过统一的查询API，提供微服务架构下多服务协同查询，下图为电子商城订单查询示例。<br/>
+统一查询的Facade为查询引擎，查询引擎结合元数据，通过解析查询方案，调用查询服务，最终输出查询数据，执行过程如下图。<br/>
+![查询引擎执行过程](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-engine.png "UnifiedQueryEngine")
+
+实际执行时，需要对微服务架构下多服务协同查询，下图为电子商城订单查询示例。<br/>
 ![电子商城订单查询](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-instance.png "Mall Order Query")
 
 能够实现此功能主要得益于iMeta框架使用元数据（metadata）对用户模型（user model）进行描述，并扩展了面向服务所需的信息，下面结合电子商城示例对实现原理进行阐述。
