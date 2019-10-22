@@ -1,6 +1,8 @@
 # iMeta Framework 查询参考手册
 ## 概述
 跨服务统一查询是iMeta的一个核心功能，通过查询方案结合元数据，可以实现常见的数据跨查询、缓存查询、远程服务调用查询，通过配置即可完成代码开发工作。<br/>
+统一查询是面向服务的查询引擎，是ORM在云计算和微服务架构下的延伸，称之为OSM（对象服务映射），其中对象为用户模型对象，执行过程如下图所示。<br/>
+![OSM](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/OSM.png "OSM")
 通过统一的查询API，提供微服务架构下多服务协同查询，下图为电子商城订单查询示例。<br/>
 ![电子商城订单查询](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/query-instance.png "Mall Order Query")
 
