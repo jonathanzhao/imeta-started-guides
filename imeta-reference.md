@@ -30,6 +30,23 @@ iMeta框架已经为Web、数据库、No-Sql、异步服务等提供了默认实
 - M3层 (MOF层)
   - 是对M2层进一步抽象，该层为递归层，即可以继续高度抽象。
   - iMetaFramework参考MOF结构，抽象出元数据的结构；M1层（用户模型层）的元素就是领域元数据的原材料。
+
+
+参考OMG EMOF Classes:
+[EMOF Classes](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/emof-classes.jpg)
+
+参考OMG EMOF Pakcages:
+[EMOF Pakcages](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/emof-packages.jpg)
+
+参考OMG UML Associations:
+[UML Associations](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/uml-association.jpg)
+
+参考OMG UML Generalizations:
+[UML Generalizations](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/uml-generalization.jpg)
+
+参考OMG UML Realizations:
+[UML Realizations](https://raw.githubusercontent.com/jonathanzhao/imeta-started-guides/master/images/imeta/e/uml-realization.jpg)
+
   
 ## iMeta与其它架构的关系
 ### iMeta vs ORM
